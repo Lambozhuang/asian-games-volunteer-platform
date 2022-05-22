@@ -4,7 +4,7 @@
       <n-input type="text" placeholder="搜索..." />
       <n-button tertiary type="primary">搜索</n-button>
     </n-space>
-    <n-button tertiary type="info">添加志愿者</n-button>
+    <n-button tertiary type="info" @click="addVolunteer()">添加志愿者</n-button>
   </n-space>
   <n-data-table
     :columns="columns"
@@ -14,13 +14,47 @@
     @update:page="handlePageChange"
     flex-height
   />
+  <n-modal
+    v-model:show="showAddVolunteer"
+    preset="dialog"
+    title="添加志愿者"
+    style="width: 700px;"
+    :show-icon="false"
+    :mask-closable="false"
+    :closable="false"
+  >
+    <div>内容</div>
+    <template #action>
+      <n-space>
+        <n-button @click="addVolunteerCancel()">取消</n-button>
+        <n-button type="primary" @click="editVolunteerConfirm()">添加</n-button>
+      </n-space>
+    </template>
+  </n-modal>
+  <n-modal
+    v-model:show="showEditVolunteer"
+    preset="dialog"
+    title="编辑志愿者"
+    style="width: 700px;"
+    :show-icon="false"
+    :mask-closable="false"
+    :closable="false"
+  >
+    <div>内容</div>
+    <template #action>
+      <n-space>
+        <n-button @click="editVolunteerCancel()">取消</n-button>
+        <n-button type="primary" @click="editVolunteerConfirm()">确认</n-button>
+      </n-space>
+    </template>
+  </n-modal>
 </template>
 <script setup>
 import axios from "axios";
-import { NDataTable, NSpace, NInput, NButton } from "naive-ui";
+import { NDataTable, NSpace, NInput, NButton, NModal } from "naive-ui";
 import { onMounted, ref, reactive, h } from "vue";
 
-// table
+// data
 const columnsReactive = [
   {
     title: "编号",
@@ -53,7 +87,8 @@ const columnsReactive = [
             ghost: true,
             style: "margin-right: 10px",
             onClick: () => {
-              console.log("edit");
+              console.log("edit" + row.id);
+              editVolunteer(row.id);
             },
           },
           {
@@ -85,6 +120,9 @@ const paginationReactive = reactive({
   pageSize: 20,
 });
 const pagination = ref(paginationReactive);
+
+const showAddVolunteer = ref(false);
+const showEditVolunteer = ref(false);
 
 // UI
 const height = ref(document.documentElement.clientHeight - 180);
@@ -135,6 +173,30 @@ function handlePageChange(currentPage) {
       loading.value = false;
     });
   }
+}
+
+function addVolunteer() {
+  showAddVolunteer.value = true;
+}
+
+function addVolunteerConfirm() {
+
+}
+
+function addVolunteerCancel() {
+  showAddVolunteer.value = false;
+}
+
+function editVolunteer(id) {
+  showEditVolunteer.value = true;
+}
+
+function editVolunteerConfirm() {
+
+}
+
+function editVolunteerCancel() {
+  showEditVolunteer.value = false;
 }
 </script>
 <style></style>
