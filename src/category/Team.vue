@@ -40,7 +40,7 @@ const columnsReactive = [
     key: "name",
   },
   {
-    title: "内容",
+    title: "详细信息",
     key: "content",
   }
 ];

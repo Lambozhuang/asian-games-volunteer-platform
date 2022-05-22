@@ -8,194 +8,19 @@
   </n-space>
   <n-data-table
     :columns="columns"
-    :data="data"
-    :row-props="rowProps"
+    :data="dataRef"
     :pagination="pagination"
     :style="{ height: `${height}px` }"
+    @update:page="handlePageChange"
     flex-height
-  />
-  <n-dropdown
-    placement="bottom-start"
-    trigger="manual"
-    :x="x"
-    :y="y"
-    :options="options"
-    :show="showDropdown"
-    :on-clickoutside="onClickoutside"
-    @select="handleSelect"
   />
 </template>
 <script setup>
-import { NDataTable, NSpace, NInput, NButton, NDropdown } from "naive-ui";
-import { onMounted, ref, nextTick } from "vue";
+import axios from "axios";
+import { NDataTable, NSpace, NInput, NButton } from "naive-ui";
+import { onMounted, ref, reactive, h } from "vue";
 
-const createData = () => {
-  return [
-    {
-      id: 0,
-      name: "John Brown",
-      age: 32,
-      job: "New York No. 1 Lake Park",
-    },
-    {
-      id: 1,
-      name: "Jim Green",
-      age: 42,
-      job: "London No. 1 Lake Park",
-    },
-    {
-      id: 2,
-      name: "Joe Black",
-      age: 32,
-      job: "Sidney No. 1 Lake Park",
-    },
-    {
-      id: 0,
-      name: "John Brown",
-      age: 32,
-      job: "New York No. 1 Lake Park",
-    },
-    {
-      id: 1,
-      name: "Jim Green",
-      age: 42,
-      job: "London No. 1 Lake Park",
-    },
-    {
-      id: 2,
-      name: "Joe Black",
-      age: 32,
-      job: "Sidney No. 1 Lake Park",
-    },
-    {
-      id: 0,
-      name: "John Brown",
-      age: 32,
-      job: "New York No. 1 Lake Park",
-    },
-    {
-      id: 1,
-      name: "Jim Green",
-      age: 42,
-      job: "London No. 1 Lake Park",
-    },
-    {
-      id: 2,
-      name: "Joe Black",
-      age: 32,
-      job: "Sidney No. 1 Lake Park",
-    },
-    {
-      id: 0,
-      name: "John Brown",
-      age: 32,
-      job: "New York No. 1 Lake Park",
-    },
-    {
-      id: 1,
-      name: "Jim Green",
-      age: 42,
-      job: "London No. 1 Lake Park",
-    },
-    {
-      id: 2,
-      name: "Joe Black",
-      age: 32,
-      job: "Sidney No. 1 Lake Park",
-    },
-    {
-      id: 0,
-      name: "John Brown",
-      age: 32,
-      job: "New York No. 1 Lake Park",
-    },
-    {
-      id: 1,
-      name: "Jim Green",
-      age: 42,
-      job: "London No. 1 Lake Park",
-    },
-    {
-      id: 2,
-      name: "Joe Black",
-      age: 32,
-      job: "Sidney No. 1 Lake Park",
-    },
-    {
-      id: 0,
-      name: "John Brown",
-      age: 32,
-      job: "New York No. 1 Lake Park",
-    },
-    {
-      id: 1,
-      name: "Jim Green",
-      age: 42,
-      job: "London No. 1 Lake Park",
-    },
-    {
-      id: 2,
-      name: "Joe Black",
-      age: 32,
-      job: "Sidney No. 1 Lake Park",
-    },
-    {
-      id: 0,
-      name: "John Brown",
-      age: 32,
-      job: "New York No. 1 Lake Park",
-    },
-    {
-      id: 1,
-      name: "Jim Green",
-      age: 42,
-      job: "London No. 1 Lake Park",
-    },
-    {
-      id: 2,
-      name: "Joe Black",
-      age: 32,
-      job: "Sidney No. 1 Lake Park",
-    },
-    {
-      id: 0,
-      name: "John Brown",
-      age: 32,
-      job: "New York No. 1 Lake Park",
-    },
-    {
-      id: 1,
-      name: "Jim Green",
-      age: 42,
-      job: "London No. 1 Lake Park",
-    },
-    {
-      id: 2,
-      name: "Joe Black",
-      age: 32,
-      job: "Sidney No. 1 Lake Park",
-    },
-    {
-      id: 0,
-      name: "John Brown",
-      age: 32,
-      job: "New York No. 1 Lake Park",
-    },
-    {
-      id: 1,
-      name: "Jim Green",
-      age: 42,
-      job: "London No. 1 Lake Park",
-    },
-    {
-      id: 2,
-      name: "Joe Black",
-      age: 32,
-      job: "Sidney No. 1 Lake Park",
-    },
-  ];
-};
-
+// table
 const columnsReactive = [
   {
     title: "编号",
@@ -206,75 +31,110 @@ const columnsReactive = [
     key: "name",
   },
   {
-    title: "年龄",
-    key: "age",
+    title: "性别",
+    key: "gender",
+    render(row) {
+      let gender = row.gender ? "男" : "女";
+      return h("div", {}, gender);
+    },
   },
   {
     title: "岗位",
     key: "job",
   },
+  {
+    title: "操作",
+    key: "action",
+    render(row) {
+      return h("div", {}, [
+        h(
+          NButton,
+          {
+            ghost: true,
+            style: "margin-right: 10px",
+            onClick: () => {
+              console.log("edit");
+            },
+          },
+          {
+            default: () => "编辑",
+          }
+        ),
+        h(
+          NButton,
+          {
+            type: "error",
+            ghost: true,
+            onClick: () => {
+              console.log("delete");
+            },
+          },
+          {
+            default: () => "删除",
+          }
+        ),
+      ]);
+    },
+  },
 ];
 const columns = ref(columnsReactive);
-const data = ref(createData());
-const pagination = ref({
+const dataRef = ref([]);
+const loading = ref(true);
+const paginationReactive = reactive({
+  page: 1,
   pageSize: 20,
 });
+const pagination = ref(paginationReactive);
 
-const options = [
-  {
-    label: "编辑",
-    key: "edit",
-  },
-  {
-    label: () => h("span", { style: { color: "red" } }, "删除"),
-    key: "delete",
-  },
-];
-const showDropdown = ref(false);
-const x = ref(0);
-const y = ref(0);
-
-let currentSelectRow = null
-
-function handleSelect(e) {
-  console.log(currentSelectRow.name)
-  console.log(e)
-
-
-  currentSelectRow = null
-  showDropdown.value = false;
-}
-
-function onClickoutside() {
-  showDropdown.value = false;
-}
-
-const rowProps = ref((row) => {
-  return {
-    onContextmenu: (e) => {
-      currentSelectRow = row
-      e.preventDefault();
-      showDropdown.value = false;
-      nextTick().then(() => {
-        showDropdown.value = true;
-        x.value = e.clientX;
-        y.value = e.clientY;
-      });
-    },
-  };
-});
-
+// UI
 const height = ref(document.documentElement.clientHeight - 180);
 
+function changeHeight() {
+  height.value = document.documentElement.clientHeight - 180;
+}
+
 onMounted(() => {
+  // UI
   window.onresize = () => {
     changeHeight();
   };
   changeHeight();
+
+  // axios for list
+  query(paginationReactive.page, paginationReactive.pageSize).then((data) => {
+    dataRef.value = data;
+    console.log(data);
+  });
 });
 
-function changeHeight() {
-  height.value = document.documentElement.clientHeight - 180;
+function query(page, pageSize = 20) {
+  let offset = page - 1;
+  return new Promise(function (resolve, reject) {
+    axios({
+      method: "get",
+      url: "/api/team/-1/volunteers",
+      params: {
+        offset: offset,
+        "page-size": pageSize,
+      },
+    }).then(function (response) {
+      if (response.data.code === 200) {
+        console.log("成功获取志愿者列表");
+        resolve(response.data.data);
+      }
+    });
+  });
+}
+
+function handlePageChange(currentPage) {
+  if (!loading.value) {
+    loading.value = true;
+    query(currentPage, paginationReactive.pageSize).then((data) => {
+      dataRef.value = data;
+      paginationReactive.page = currentPage;
+      loading.value = false;
+    });
+  }
 }
 </script>
 <style></style>

@@ -60,18 +60,19 @@ function login() {
     url: "/api/login",
     data: {
       username: userName.value,
-      password: password.value
+      password: password.value,
     },
   })
-  .then(function (response) {
-    if(response.data.code === 200) {
-      console.log("登录成功")
-      router.push({ name: "index" });
-    } else {
-      console.log("登录失败")
-      alert("Login Failed");
-    }
-  });
+    .then(function (response) {
+      if (response.data.code === 200) {
+        console.log("登录成功");
+        router.push({ name: "index" });
+      }
+    })
+    .catch(function (error) {
+      console.log("登录失败");
+      console.log(error);
+    });
 }
 </script>
 
