@@ -7,16 +7,12 @@
   >
     <n-layout-sider
       bordered
-      content-style="padding: 20px"
+      content-style="padding: 15px"
       :native-scrollbar="false"
     >
-      <n-h2>志愿者管理平台</n-h2>
-      <n-divider />
-      <n-space justify="space-between" align="center">
-        <n-h3>欢迎，管理员xxx</n-h3>
-        <n-button tertiary type="error" @click="logout()">注销</n-button>
+      <n-space vertical align="center" justify="center">
+        <n-h1>志愿者管理平台</n-h1>
       </n-space>
-      <n-divider />
       <n-menu
         :options="menuOptions"
         :default-value="state"
@@ -25,9 +21,21 @@
     </n-layout-sider>
     <n-layout style="min-width: 600px">
       <n-layout-header bordered>
-        <n-h3>{{ stateName }}</n-h3>
+        <n-space justify="space-between">
+          <n-h3>{{ stateName }}</n-h3>
+          <n-space justify="space-between" align="center">
+            欢迎，管理员xxx
+            <n-button tertiary type="error" size="small" @click="logout()"
+              >注销</n-button
+            >
+          </n-space>
+        </n-space>
       </n-layout-header>
-      <n-layout-content content-style="padding: 20px" embedded :native-scrollbar="false">
+      <n-layout-content
+        content-style="padding: 20px"
+        embedded
+        :native-scrollbar="false"
+      >
         <RouterView />
       </n-layout-content>
     </n-layout>
@@ -106,7 +114,7 @@ function logout() {
 .n-layout-header {
   padding: 20px;
 }
-.n-h2,
+
 .n-h3 {
   margin: 0;
   padding: 0;
