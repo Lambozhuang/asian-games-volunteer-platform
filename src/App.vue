@@ -10,6 +10,9 @@ import { computed } from "@vue/reactivity";
 
 const osThemeRef = useOsTheme()
 const theme = computed(() => (osThemeRef.value === 'dark' ? darkTheme : null))
+
+
+
 </script>
 <style>
 

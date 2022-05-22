@@ -55,7 +55,23 @@ function login() {
   console.log(userName.value);
   console.log(password.value);
 
-  router.push({ name: "index" });
+  axios({
+    method: "post",
+    url: "/api/login",
+    data: {
+      username: userName.value,
+      password: password.value
+    },
+  })
+  .then(function (response) {
+    if(response.data.code === 200) {
+      console.log("登录成功")
+      router.push({ name: "index" });
+    } else {
+      console.log("登录失败")
+      alert("Login Failed");
+    }
+  });
 }
 </script>
 

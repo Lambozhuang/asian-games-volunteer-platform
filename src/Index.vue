@@ -27,7 +27,7 @@
       <n-layout-header bordered>
         <n-h3>{{ stateName }}</n-h3>
       </n-layout-header>
-      <n-layout-content embedded :native-scrollbar="false">
+      <n-layout-content content-style="padding: 20px" embedded :native-scrollbar="false">
         <RouterView />
       </n-layout-content>
     </n-layout>

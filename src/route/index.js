@@ -15,15 +15,15 @@ const routes = [
     children: [
       {
         path: 'volunteer',
-        component: () => import("/src/VolunteerManagement.vue")
+        component: () => import("/src/category/Volunteer.vue")
       },
       {
         path: 'job',
-        component: () => import("/src/JobManagement.vue")
+        component: () => import("/src/category/Job.vue")
       },
       {
         path: 'team',
-        component: () => import("/src/TeamManagement.vue")
+        component: () => import("/src/category/Team.vue")
       }
     ]
   }
