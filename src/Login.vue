@@ -64,7 +64,7 @@ function login() {
     },
   })
     .then(function (response) {
-      if (response.data.code === 200) {
+      if (response.data.code === 0) {
         console.log("登录成功");
         router.push({ name: "index" });
       }

@@ -7,9 +7,11 @@
     <n-button tertiary type="info" @click="addVolunteer()">添加志愿者</n-button>
   </n-space>
   <n-data-table
+    remote
     :columns="columns"
     :data="dataRef"
-    :pagination="pagination"
+    :loading="loading"
+    :pagination="paginationReactive"
     :style="{ height: `${height}px` }"
     @update:page="handlePageChange"
     flex-height
@@ -18,41 +20,41 @@
     v-model:show="showAddVolunteer"
     preset="dialog"
     title="添加志愿者"
-    style="width: 700px;"
+    style="width: 600px"
     :show-icon="false"
     :mask-closable="false"
     :closable="false"
   >
-    <div>内容</div>
-    <template #action>
-      <n-space>
-        <n-button @click="addVolunteerCancel()">取消</n-button>
-        <n-button type="primary" @click="editVolunteerConfirm()">添加</n-button>
-      </n-space>
-    </template>
+    <volunteer-form type="add" @dismiss="dismissModal" />
   </n-modal>
   <n-modal
     v-model:show="showEditVolunteer"
     preset="dialog"
     title="编辑志愿者"
-    style="width: 700px;"
+    style="width: 600px"
     :show-icon="false"
+    :auto-focus="false"
     :mask-closable="false"
     :closable="false"
   >
-    <div>内容</div>
-    <template #action>
-      <n-space>
-        <n-button @click="editVolunteerCancel()">取消</n-button>
-        <n-button type="primary" @click="editVolunteerConfirm()">确认</n-button>
-      </n-space>
-    </template>
+    <volunteer-form type="edit" @dismiss="dismissModal" :data="selectedData" />
   </n-modal>
 </template>
 <script setup>
 import axios from "axios";
-import { NDataTable, NSpace, NInput, NButton, NModal } from "naive-ui";
+import {
+  NDataTable,
+  NSpace,
+  NInput,
+  NButton,
+  NModal,
+  NForm,
+  NGrid,
+  useLoadingBar,
+  useMessage,
+} from "naive-ui";
 import { onMounted, ref, reactive, h } from "vue";
+import VolunteerForm from "./VolunteerForm.vue";
 
 // data
 const columnsReactive = [
@@ -87,8 +89,8 @@ const columnsReactive = [
             ghost: true,
             style: "margin-right: 10px",
             onClick: () => {
-              console.log("edit" + row.id);
-              editVolunteer(row.id);
+              console.log("edit " + row.id);
+              editVolunteer(row);
             },
           },
           {
@@ -115,17 +117,22 @@ const columnsReactive = [
 const columns = ref(columnsReactive);
 const dataRef = ref([]);
 const loading = ref(true);
-const paginationReactive = reactive({
+const paginationReactive = ref({
   page: 1,
+  pageCount: 1,
   pageSize: 20,
+  itemCount: 0,
 });
-const pagination = ref(paginationReactive);
 
 const showAddVolunteer = ref(false);
 const showEditVolunteer = ref(false);
 
+const selectedData = ref({});
+
 // UI
 const height = ref(document.documentElement.clientHeight - 180);
+
+const message = useMessage();
 
 function changeHeight() {
   height.value = document.documentElement.clientHeight - 180;
@@ -139,14 +146,20 @@ onMounted(() => {
   changeHeight();
 
   // axios for list
-  query(paginationReactive.page, paginationReactive.pageSize).then((data) => {
-    dataRef.value = data;
-    console.log(data);
-  });
+  query(paginationReactive.value.page, paginationReactive.value.pageSize).then(
+    (data) => {
+      dataRef.value = data.volunteers;
+      paginationReactive.value.pageCount = data.pageCount;
+      paginationReactive.value.itemCount = data.itemCount;
+      loading.value = false;
+      console.log(data);
+      console.log(paginationReactive.value);
+    }
+  );
 });
 
 function query(page, pageSize = 20) {
-  let offset = page - 1;
+  let offset = (page - 1) * pageSize;
   return new Promise(function (resolve, reject) {
     axios({
       method: "get",
@@ -156,8 +169,11 @@ function query(page, pageSize = 20) {
         "page-size": pageSize,
       },
     }).then(function (response) {
-      if (response.data.code === 200) {
+      if (response.data.code === 0) {
         console.log("成功获取志愿者列表");
+        const data = response.data.data;
+        data.itemCount = response.data.data.num;
+        data.pageCount = (data.itemCount - 1) / pageSize;
         resolve(response.data.data);
       }
     });
@@ -165,11 +181,15 @@ function query(page, pageSize = 20) {
 }
 
 function handlePageChange(currentPage) {
+  console.log(currentPage);
+  console.log(loading.value);
   if (!loading.value) {
     loading.value = true;
-    query(currentPage, paginationReactive.pageSize).then((data) => {
-      dataRef.value = data;
-      paginationReactive.page = currentPage;
+    query(currentPage, paginationReactive.value.pageSize).then((data) => {
+      dataRef.value = data.volunteers;
+      paginationReactive.value.page = currentPage;
+      paginationReactive.value.pageCount = data.pageCount;
+      paginationReactive.value.itemCount = data.itemCount;
       loading.value = false;
     });
   }
@@ -179,23 +199,19 @@ function addVolunteer() {
   showAddVolunteer.value = true;
 }
 
-function addVolunteerConfirm() {
-
-}
-
-function addVolunteerCancel() {
-  showAddVolunteer.value = false;
-}
-
-function editVolunteer(id) {
+function editVolunteer(data) {
+  selectedData.value = data;
   showEditVolunteer.value = true;
 }
 
-function editVolunteerConfirm() {
-
-}
-
-function editVolunteerCancel() {
+function dismissModal(status) {
+  console.log(status);
+  if (status === "add") {
+    message.success("添加成功");
+  } else if (status === "edit") {
+    message.success("修改成功");
+  }
+  showAddVolunteer.value = false;
   showEditVolunteer.value = false;
 }
 </script>
