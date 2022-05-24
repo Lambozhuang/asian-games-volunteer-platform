@@ -19,12 +19,12 @@
         @update:value="handleMenuUpdate"
       />
     </n-layout-sider>
-    <n-layout style="min-width: 600px">
+    <n-layout style="min-width: 1100px">
       <n-layout-header bordered>
         <n-space justify="space-between">
           <n-h3>{{ stateName }}</n-h3>
           <n-space justify="space-between" align="center">
-            欢迎，管理员xxx
+            欢迎，{{ username }}
             <n-button tertiary type="error" size="small" @click="logout()"
               >注销</n-button
             >
@@ -72,6 +72,8 @@ const menuOptions = ref([
     key: "team",
   },
 ]);
+
+const username = ref("管理员xxx")
 
 const router = useRouter();
 const route = useRoute();

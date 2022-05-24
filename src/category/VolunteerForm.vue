@@ -56,9 +56,9 @@
         />
       </n-form-item-grid-item>
       <n-form-item-grid-item :span="2" />
-      <n-form-item-grid-item :span="8" label="选择志愿者岗位" path="intention">
+      <n-form-item-grid-item :span="8" label="选择志愿者岗位" path="job_id">
         <n-select
-          v-model:value="formValue.intention"
+          v-model:value="formValue.job_id"
           placeholder="选择志愿者岗位"
           :options="jobOptions"
         />
@@ -117,9 +117,8 @@ const formValue = ref({
   employment: "",
   experience: "",
   avatar: "",
-  intention: null,
+  job_id: null,
   team_id: -1,
-  intention: null,
 });
 const rules = ref({
   name: {
@@ -157,17 +156,18 @@ const rules = ref({
     trigger: ["blur", "input"],
     message: "请输入个人免冠照连接",
   },
-  intention: {
+  job_id: {
     type: "number",
     required: true,
     trigger: ["blur", "change"],
     message: "请选择志愿者岗位",
   },
-  // team_id: {
-  //   required: true,
-  //   trigger: ["blur", "change"],
-  //   message: "请选择团队",
-  // },
+  team_id: {
+    type: "number",
+    required: true,
+    trigger: ["blur", "change"],
+    message: "请选择团队",
+  },
 });
 
 const confirmLoading = ref(false);
@@ -181,7 +181,7 @@ onMounted(() => {
 
     let tempData = props.data;
     tempData.gender = tempData.gender ? "true" : "false";
-
+    tempData.team_id = tempData.team_id == null ? -1 : tempData.team_id;
     formValue.value = tempData;
   }
 
@@ -192,7 +192,9 @@ onMounted(() => {
     .then((response) => {
       if (response.data.code === 0) {
         console.log("获取岗位列表成功");
-        jobOptions.value = response.data.data.map((v) => {
+        let tempData = response.data.data;
+        tempData.team_id = tempData.team_id == null ? -1 : teamData.team_id;
+        jobOptions.value = tempData.map((v) => {
           return { value: v.id, label: v.name };
         });
       }
@@ -207,7 +209,7 @@ function handleCancel() {
 }
 
 function handleConfirm() {
-  console.log(formValue.value)
+  console.log(formValue.value);
   formRef.value?.validate((errors) => {
     if (!errors) {
       console.log("Infomation validated.");
@@ -222,7 +224,7 @@ function handleConfirm() {
         payload.gender = payload.gender === "true" ? true : false;
         axios({
           method: "post",
-          url: "/api/team/-1/volunteer/",
+          url: "/api/team/" + payload.team_id + "/volunteer/",
           data: payload,
         })
           .then((response) => {
@@ -248,7 +250,7 @@ function handleConfirm() {
         payload.team_id = payload.team_id == null ? -1 : payload.team_id;
         axios({
           method: "patch",
-          url: "/api/team/-1/volunteer/" + payload.id,
+          url: "/api/team/" + payload.team_id + "/volunteer/" + payload.id,
           data: payload,
         })
           .then((response) => {

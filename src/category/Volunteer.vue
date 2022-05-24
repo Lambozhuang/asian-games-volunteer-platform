@@ -52,6 +52,7 @@ import {
   NGrid,
   useLoadingBar,
   useMessage,
+  useDialog,
 } from "naive-ui";
 import { onMounted, ref, reactive, h } from "vue";
 import VolunteerForm from "./VolunteerForm.vue";
@@ -61,26 +62,48 @@ const columnsReactive = [
   {
     title: "编号",
     key: "id",
+    width: 60,
   },
   {
     title: "姓名",
     key: "name",
   },
   {
+    title: "身份证号",
+    key: "id_number",
+    ellipsis: {
+      tooltip: true,
+    },
+  },
+  {
     title: "性别",
     key: "gender",
+    width: 60,
     render(row) {
       let gender = row.gender ? "男" : "女";
       return h("div", {}, gender);
     },
   },
   {
+    title: "联系方式",
+    key: "tel",
+  },
+  {
+    title: "志愿",
+    key: "intention",
+  },
+  {
     title: "岗位",
     key: "job",
   },
   {
+    title: "状态",
+    key: "status",
+  },
+  {
     title: "操作",
     key: "action",
+    width: 160,
     render(row) {
       return h("div", {}, [
         h(
@@ -103,7 +126,8 @@ const columnsReactive = [
             type: "error",
             ghost: true,
             onClick: () => {
-              console.log("delete");
+              console.log("delete " + row.id);
+              deleteVolunteer(row);
             },
           },
           {
@@ -133,6 +157,7 @@ const selectedData = ref({});
 const height = ref(document.documentElement.clientHeight - 180);
 
 const message = useMessage();
+const dialog = useDialog();
 
 function changeHeight() {
   height.value = document.documentElement.clientHeight - 180;
@@ -204,8 +229,45 @@ function editVolunteer(data) {
   showEditVolunteer.value = true;
 }
 
+function deleteVolunteer(data) {
+  data.team_id = data.team_id == null ? -1 : data.team_id;
+  dialog.error({
+    title: "警告",
+    content: "删除后将无法恢复",
+    positiveText: "确认删除",
+    negativeText: "取消",
+    onPositiveClick: () => {
+      loading.value = true;
+      axios({
+        method: "delete",
+        url: "/api/team/" + data.team_id + "/volunteer/" + data.id,
+      })
+        .then((response) => {
+          if (response.data.code === 0) {
+            message.success("删除成功");
+            console.log("删除成功");
+            location.reload();
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    onNegativeClick: () => {},
+  });
+}
+
 function dismissModal(status) {
-  console.log(status);
+  query(paginationReactive.value.page, paginationReactive.value.pageSize).then(
+    (data) => {
+      dataRef.value = data.volunteers;
+      paginationReactive.value.pageCount = data.pageCount;
+      paginationReactive.value.itemCount = data.itemCount;
+      loading.value = false;
+      console.log(data);
+      console.log(paginationReactive.value);
+    }
+  );
   if (status === "add") {
     message.success("添加成功");
   } else if (status === "edit") {

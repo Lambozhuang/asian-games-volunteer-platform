@@ -2,7 +2,9 @@
   <n-config-provider :theme="theme">
     <n-loading-bar-provider>
       <n-message-provider>
-        <router-view></router-view>
+        <n-dialog-provider>
+          <router-view></router-view>
+        </n-dialog-provider>
       </n-message-provider>
     </n-loading-bar-provider>
   </n-config-provider>
@@ -15,6 +17,7 @@ import {
   NConfigProvider,
   NLoadingBarProvider,
   NMessageProvider,
+  NDialogProvider
 } from "naive-ui";
 import { computed } from "@vue/reactivity";
 
