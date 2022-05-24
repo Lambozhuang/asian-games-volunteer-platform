@@ -33,6 +33,7 @@ const columnsReactive = [
   {
     title: "编号",
     key: "id",
+    width: 60
   },
   {
     title: "名称",

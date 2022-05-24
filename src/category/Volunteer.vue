@@ -1,7 +1,22 @@
 <template>
   <n-space style="padding-bottom: 10px; width: 100%" justify="space-between">
     <n-space>
-      <n-button tertiary type="primary" @click="refreshTable()">刷新</n-button>
+      <n-button
+        tertiary
+        type="warning"
+        @click="finishSearching()"
+        v-if="pageStatus === 'search'"
+      >
+        取消搜索
+      </n-button>
+      <n-button
+        tertiary
+        type="primary"
+        @click="refreshTable()"
+        v-if="pageStatus === 'regular'"
+      >
+        刷新
+      </n-button>
     </n-space>
     <n-space align="center">
       <n-p>按身份证搜索</n-p>
@@ -108,7 +123,7 @@ const columnsReactive = [
   },
   {
     title: "岗位",
-    key: "job",
+    key: "job.name",
   },
   {
     title: "状态",
@@ -171,6 +186,7 @@ const searchValue = ref(null);
 
 // UI
 const height = ref(document.documentElement.clientHeight - 180);
+const pageStatus = ref("regular");
 
 const message = useMessage();
 const dialog = useDialog();
@@ -211,10 +227,11 @@ function query(page, pageSize = 20) {
     }).then(function (response) {
       if (response.data.code === 0) {
         console.log("成功获取志愿者列表");
-        const data = response.data.data;
+        console.log(response.data.data);
+        let data = response.data.data;
         data.itemCount = response.data.data.num;
-        data.pageCount = (data.itemCount - 1) / pageSize;
-        resolve(response.data.data);
+        data.pageCount = Math.round((data.itemCount - 1) / pageSize);
+        resolve(data);
       }
     });
   });
@@ -242,7 +259,6 @@ function refreshTable() {
 
 function handlePageChange(currentPage) {
   console.log(currentPage);
-  console.log(loading.value);
   if (!loading.value) {
     loading.value = true;
     query(currentPage, pagination.value.pageSize).then((data) => {
@@ -251,34 +267,41 @@ function handlePageChange(currentPage) {
       pagination.value.pageCount = data.pageCount;
       pagination.value.itemCount = data.itemCount;
       loading.value = false;
+      console.log(pagination.value);
     });
   }
 }
 
 function searchVolunteer() {
+  loading.value = true;
+  loadingBar.start();
   axios({
     method: "get",
-    url: "/api/team/-1/volunteer",
-    params: {
-      IDNumber: searchValue.value,
-    },
+    url: "/api/team/-1/volunteer/" + searchValue.value,
   })
     .then((response) => {
       if (response.data.code === 0) {
         console.log("查询成功");
+        pageStatus.value = "search";
         pagination.value = {
           page: 1,
           pageCount: 1,
           pageSize: 20,
           itemCount: 0,
         };
-
-        
+        dataRef.value = [response.data.data];
+        loading.value = false;
+        loadingBar.finish();
+        console.log(dataRef.value)
       }
     })
     .catch((error) => {
       console.log(error);
     });
+}
+
+function finishSearching() {
+  refreshTable();
 }
 
 function addVolunteer() {

@@ -182,6 +182,7 @@ onMounted(() => {
     let tempData = props.data;
     tempData.gender = tempData.gender ? "true" : "false";
     tempData.team_id = tempData.team_id == null ? -1 : tempData.team_id;
+    tempData.job_id = tempData.job == null ? null : tempData.job.id;
     formValue.value = tempData;
   }
 
@@ -193,7 +194,7 @@ onMounted(() => {
       if (response.data.code === 0) {
         console.log("获取岗位列表成功");
         let tempData = response.data.data;
-        tempData.team_id = tempData.team_id == null ? -1 : teamData.team_id;
+        tempData.team_id = tempData.team_id == null ? -1 : tempData.team_id;
         jobOptions.value = tempData.map((v) => {
           return { value: v.id, label: v.name };
         });
