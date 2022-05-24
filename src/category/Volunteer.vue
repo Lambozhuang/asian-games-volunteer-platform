@@ -1,17 +1,30 @@
 <template>
   <n-space style="padding-bottom: 10px; width: 100%" justify="space-between">
     <n-space>
-      <n-input type="text" placeholder="搜索..." />
-      <n-button tertiary type="primary">搜索</n-button>
+      <n-button tertiary type="primary" @click="refreshTable()">刷新</n-button>
     </n-space>
-    <n-button tertiary type="info" @click="addVolunteer()">添加志愿者</n-button>
+    <n-space align="center">
+      <n-p>按身份证搜索</n-p>
+      <n-input
+        type="text"
+        placeholder="输入身份证号"
+        v-model:value="searchValue"
+      />
+      <n-button tertiary type="primary" @click="searchVolunteer()"
+        >搜索</n-button
+      >
+      <n-divider vertical />
+      <n-button tertiary type="info" @click="addVolunteer()"
+        >添加志愿者</n-button
+      >
+    </n-space>
   </n-space>
   <n-data-table
     remote
     :columns="columns"
     :data="dataRef"
     :loading="loading"
-    :pagination="paginationReactive"
+    :pagination="pagination"
     :style="{ height: `${height}px` }"
     @update:page="handlePageChange"
     flex-height
@@ -48,11 +61,12 @@ import {
   NInput,
   NButton,
   NModal,
-  NForm,
-  NGrid,
+  NP,
+  NDivider,
   useLoadingBar,
   useMessage,
   useDialog,
+  loadingBarDark,
 } from "naive-ui";
 import { onMounted, ref, reactive, h } from "vue";
 import VolunteerForm from "./VolunteerForm.vue";
@@ -141,7 +155,7 @@ const columnsReactive = [
 const columns = ref(columnsReactive);
 const dataRef = ref([]);
 const loading = ref(true);
-const paginationReactive = ref({
+const pagination = ref({
   page: 1,
   pageCount: 1,
   pageSize: 20,
@@ -153,11 +167,14 @@ const showEditVolunteer = ref(false);
 
 const selectedData = ref({});
 
+const searchValue = ref(null);
+
 // UI
 const height = ref(document.documentElement.clientHeight - 180);
 
 const message = useMessage();
 const dialog = useDialog();
+const loadingBar = useLoadingBar();
 
 function changeHeight() {
   height.value = document.documentElement.clientHeight - 180;
@@ -171,16 +188,14 @@ onMounted(() => {
   changeHeight();
 
   // axios for list
-  query(paginationReactive.value.page, paginationReactive.value.pageSize).then(
-    (data) => {
-      dataRef.value = data.volunteers;
-      paginationReactive.value.pageCount = data.pageCount;
-      paginationReactive.value.itemCount = data.itemCount;
-      loading.value = false;
-      console.log(data);
-      console.log(paginationReactive.value);
-    }
-  );
+  query(pagination.value.page, pagination.value.pageSize).then((data) => {
+    dataRef.value = data.volunteers;
+    pagination.value.pageCount = data.pageCount;
+    pagination.value.itemCount = data.itemCount;
+    loading.value = false;
+    console.log(data);
+    console.log(pagination.value);
+  });
 });
 
 function query(page, pageSize = 20) {
@@ -205,19 +220,65 @@ function query(page, pageSize = 20) {
   });
 }
 
+function refreshTable() {
+  loading.value = true;
+  loadingBar.start();
+  pagination.value = {
+    page: 1,
+    pageCount: 1,
+    pageSize: 20,
+    itemCount: 0,
+  };
+  query(pagination.value.page, pagination.value.pageSize).then((data) => {
+    loadingBar.finish();
+    dataRef.value = data.volunteers;
+    pagination.value.pageCount = data.pageCount;
+    pagination.value.itemCount = data.itemCount;
+    loading.value = false;
+    console.log(data);
+    console.log(pagination.value);
+  });
+}
+
 function handlePageChange(currentPage) {
   console.log(currentPage);
   console.log(loading.value);
   if (!loading.value) {
     loading.value = true;
-    query(currentPage, paginationReactive.value.pageSize).then((data) => {
+    query(currentPage, pagination.value.pageSize).then((data) => {
       dataRef.value = data.volunteers;
-      paginationReactive.value.page = currentPage;
-      paginationReactive.value.pageCount = data.pageCount;
-      paginationReactive.value.itemCount = data.itemCount;
+      pagination.value.page = currentPage;
+      pagination.value.pageCount = data.pageCount;
+      pagination.value.itemCount = data.itemCount;
       loading.value = false;
     });
   }
+}
+
+function searchVolunteer() {
+  axios({
+    method: "get",
+    url: "/api/team/-1/volunteer",
+    params: {
+      IDNumber: searchValue.value,
+    },
+  })
+    .then((response) => {
+      if (response.data.code === 0) {
+        console.log("查询成功");
+        pagination.value = {
+          page: 1,
+          pageCount: 1,
+          pageSize: 20,
+          itemCount: 0,
+        };
+
+        
+      }
+    })
+    .catch((error) => {
+      console.log(error);
+    });
 }
 
 function addVolunteer() {
@@ -238,15 +299,19 @@ function deleteVolunteer(data) {
     negativeText: "取消",
     onPositiveClick: () => {
       loading.value = true;
+      loadingBar.start();
       axios({
         method: "delete",
         url: "/api/team/" + data.team_id + "/volunteer/" + data.id,
       })
         .then((response) => {
           if (response.data.code === 0) {
+            loadingBar.finish();
             message.success("删除成功");
             console.log("删除成功");
-            location.reload();
+            setTimeout(() => {
+              location.reload();
+            }, 300);
           }
         })
         .catch((error) => {
@@ -258,16 +323,17 @@ function deleteVolunteer(data) {
 }
 
 function dismissModal(status) {
-  query(paginationReactive.value.page, paginationReactive.value.pageSize).then(
-    (data) => {
-      dataRef.value = data.volunteers;
-      paginationReactive.value.pageCount = data.pageCount;
-      paginationReactive.value.itemCount = data.itemCount;
-      loading.value = false;
-      console.log(data);
-      console.log(paginationReactive.value);
-    }
-  );
+  loading.value = true;
+  loadingBar.start();
+  query(pagination.value.page, pagination.value.pageSize).then((data) => {
+    dataRef.value = data.volunteers;
+    pagination.value.pageCount = data.pageCount;
+    pagination.value.itemCount = data.itemCount;
+    loading.value = false;
+    loadingBar.finish();
+    console.log(data);
+    console.log(pagination.value);
+  });
   if (status === "add") {
     message.success("添加成功");
   } else if (status === "edit") {
