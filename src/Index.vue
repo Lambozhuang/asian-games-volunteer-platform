@@ -16,6 +16,7 @@
       <n-menu
         :options="menuOptions"
         :default-value="state"
+        :value="state"
         @update:value="handleMenuUpdate"
       />
     </n-layout-sider>
@@ -59,7 +60,7 @@ import {
 } from "naive-ui";
 import { onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import userinfo from "./Common.vue";
+import common from "./Common.vue";
 
 const menuOptions = ref([
   {
@@ -76,7 +77,7 @@ const menuOptions = ref([
   },
 ]);
 
-const username = ref(userinfo.username);
+const username = ref(common.userinfo.username);
 
 const router = useRouter();
 const route = useRoute();
@@ -104,9 +105,10 @@ onMounted(() => {
     .then((response) => {
       if (response.data.code === 0) {
         console.log("身份已验证");
-        userinfo.username = response.data.data.username;
-        userinfo.root = response.data.data.is_root;
-        userinfo.team_id = response.data.data.team_id;
+        common.userinfo.username = response.data.data.username;
+        common.userinfo.root = response.data.data.is_root;
+        common.userinfo.team_id = response.data.data.team_id === null ? -1 : response.data.data.team_id;
+        router.replace("/index/volunteer");
       } else {
         console.log("未登录");
         router.replace({ name: "login" });
