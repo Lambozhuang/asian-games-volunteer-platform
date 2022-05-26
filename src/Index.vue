@@ -44,6 +44,7 @@
 
 <script setup>
 import { computed } from "@vue/reactivity";
+import axios from "axios";
 import {
   NLayout,
   NLayoutSider,
@@ -56,8 +57,10 @@ import {
   NH2,
   NH3,
 } from "naive-ui";
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import userinfo from "./Common.vue";
+
 const menuOptions = ref([
   {
     label: "志愿者管理",
@@ -73,7 +76,7 @@ const menuOptions = ref([
   },
 ]);
 
-const username = ref("管理员xxx")
+const username = ref(userinfo.username);
 
 const router = useRouter();
 const route = useRoute();
@@ -91,6 +94,25 @@ const stateName = computed(() => {
     case "team":
       return "团队管理";
   }
+});
+
+onMounted(() => {
+  // axios({
+  //   method: "get",
+  //   url: "/api/admin/" + userinfo.username,
+  // })
+  //   .then((response) => {
+  //     if (response.data.code === 0) {
+  //       console.log("身份已验证");
+  //     } else {
+  //       console.log("未登录");
+  //       router.replace({ name: "login" });
+  //     }
+  //   })
+  //   .catch((error) => {
+  //     console.log(error);
+  //     router.replace({ name: "login" });
+  //   });
 });
 
 function handleMenuUpdate(key, item) {

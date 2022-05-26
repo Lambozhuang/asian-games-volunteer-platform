@@ -81,7 +81,6 @@ import {
   useLoadingBar,
   useMessage,
   useDialog,
-  loadingBarDark,
 } from "naive-ui";
 import { onMounted, ref, reactive, h } from "vue";
 import VolunteerForm from "./VolunteerForm.vue";
