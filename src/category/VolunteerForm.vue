@@ -193,7 +193,7 @@ onMounted(() => {
     .then((response) => {
       if (response.data.code === 0) {
         console.log("获取岗位列表成功");
-        let tempData = response.data.data;
+        let tempData = response.data.data.jobs;
         tempData.team_id = tempData.team_id == null ? -1 : tempData.team_id;
         jobOptions.value = tempData.map((v) => {
           return { value: v.id, label: v.name };
