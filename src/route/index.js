@@ -10,7 +10,6 @@ const routes = [
   {
     path: "/index",
     name: "index",
-    redirect: "/index/volunteer",
     component: () => import("/src/Index.vue"),
     children: [
       {
