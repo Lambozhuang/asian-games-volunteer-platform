@@ -22,7 +22,7 @@
   >
     <job-form type="add" @dismiss="dismissModal" />
   </n-modal>
-    <n-modal
+  <n-modal
     v-model:show="showEditJob"
     preset="dialog"
     title="编辑岗位"
@@ -35,10 +35,20 @@
   </n-modal>
 </template>
 <script setup>
-import { NDataTable, NSpace, NInput, NButton, NModal, useLoadingBar, useDialog, useMessage } from "naive-ui";
+import {
+  NDataTable,
+  NSpace,
+  NInput,
+  NButton,
+  NModal,
+  useLoadingBar,
+  useDialog,
+  useMessage,
+} from "naive-ui";
 import { ref, onMounted, h } from "vue";
 import axios from "axios";
 import JobForm from "./JobForm.vue";
+import userinfo from "../Common.vue";
 
 const columnsReactive = [
   {
@@ -50,7 +60,7 @@ const columnsReactive = [
     title: "名称",
     key: "name",
   },
-    {
+  {
     title: "工作地点",
     key: "location",
   },
@@ -141,7 +151,7 @@ function query(page, pageSize = 20) {
   return new Promise(function (resolve, reject) {
     axios({
       method: "get",
-      url: "/api/team/-1/jobs",
+      url: "/api/team/" + userinfo.team_id + "/jobs",
       params: {
         offset: offset,
         "page-size": pageSize,
@@ -159,9 +169,7 @@ function query(page, pageSize = 20) {
   });
 }
 
-function refreshTable() {
-
-}
+function refreshTable() {}
 
 function addJob() {
   showAddJob.value = true;
@@ -173,7 +181,7 @@ function editJob(data) {
 }
 
 function deleteJob(data) {
-  data.team_id = data.team_id == null ? -1 : data.team_id; // TODO:
+  data.team_id = data.team_id == null ? -1 : data.team_id;
   dialog.error({
     title: "警告",
     content: "删除后将无法恢复",

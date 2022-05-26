@@ -25,13 +25,9 @@
         placeholder="输入身份证号"
         v-model:value="searchValue"
       />
-      <n-button tertiary type="primary" @click="searchVolunteer"
-        >搜索</n-button
-      >
+      <n-button tertiary type="primary" @click="searchVolunteer">搜索</n-button>
       <n-divider vertical />
-      <n-button tertiary type="info" @click="addVolunteer"
-        >添加志愿者</n-button
-      >
+      <n-button tertiary type="info" @click="addVolunteer">添加志愿者</n-button>
     </n-space>
   </n-space>
   <n-data-table
@@ -84,6 +80,7 @@ import {
 } from "naive-ui";
 import { onMounted, ref, reactive, h } from "vue";
 import VolunteerForm from "./VolunteerForm.vue";
+import userinfo from "../Common.vue";
 
 // data
 const columnsReactive = [
@@ -214,7 +211,7 @@ function query(page, pageSize = 20) {
   return new Promise(function (resolve, reject) {
     axios({
       method: "get",
-      url: "/api/team/-1/volunteers",
+      url: "/api/team/" + userinfo.team_id + "/volunteers",
       params: {
         offset: offset,
         "page-size": pageSize,
@@ -272,7 +269,7 @@ function searchVolunteer() {
   loadingBar.start();
   axios({
     method: "get",
-    url: "/api/team/-1/volunteer/" + searchValue.value,
+    url: "/api/team/" + userinfo.team_id + "/volunteer/" + searchValue.value,
   })
     .then((response) => {
       if (response.data.code === 0) {
@@ -287,7 +284,7 @@ function searchVolunteer() {
         dataRef.value = [response.data.data];
         loading.value = false;
         loadingBar.finish();
-        console.log(dataRef.value)
+        console.log(dataRef.value);
       }
     })
     .catch((error) => {
@@ -309,7 +306,7 @@ function editVolunteer(data) {
 }
 
 function deleteVolunteer(data) {
-  data.team_id = data.team_id == null ? -1 : data.team_id; // TODO:
+  data.team_id = data.team_id == null ? -1 : data.team_id;
   dialog.error({
     title: "警告",
     content: "删除后将无法恢复",

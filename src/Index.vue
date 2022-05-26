@@ -106,6 +106,7 @@ onMounted(() => {
         console.log("身份已验证");
         userinfo.username = response.data.data.username;
         userinfo.root = response.data.data.is_root;
+        userinfo.team_id = response.data.data.team_id;
       } else {
         console.log("未登录");
         router.replace({ name: "login" });
