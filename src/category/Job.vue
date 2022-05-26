@@ -1,30 +1,43 @@
 <template>
   <n-space style="padding-bottom: 10px; width: 100%" justify="space-between">
-    <n-button tertiary type="primary" @click="refreshTable()"> 刷新 </n-button>
-    <n-button tertiary type="info">添加岗位</n-button>
+    <n-button tertiary type="primary" @click="refreshTable"> 刷新 </n-button>
+    <n-button tertiary type="info" @click="addJob">添加岗位</n-button>
   </n-space>
   <n-data-table
     :columns="columns"
     :data="dataRef"
     :pagination="pagination"
     :style="{ height: `${height}px` }"
+    :loading="loading"
     flex-height
   />
   <n-modal
-    v-model:show="showAddVolunteer"
+    v-model:show="showAddJob"
     preset="dialog"
-    title="添加志愿者"
+    title="添加岗位"
     style="width: 600px"
     :show-icon="false"
     :mask-closable="false"
     :closable="false"
   >
-    <job-form @dismiss="dismissModal" />
+    <job-form type="add" @dismiss="dismissModal" />
+  </n-modal>
+    <n-modal
+    v-model:show="showEditJob"
+    preset="dialog"
+    title="编辑岗位"
+    style="width: 600px"
+    :show-icon="false"
+    :mask-closable="false"
+    :closable="false"
+  >
+    <job-form type="edit" @dismiss="dismissModal" :data="selectedData" />
   </n-modal>
 </template>
 <script setup>
-import { NDataTable, NSpace, NInput, NButton, NModal } from "naive-ui";
-import { ref, onMounted } from "vue";
+import { NDataTable, NSpace, NInput, NButton, NModal, useLoadingBar } from "naive-ui";
+import { ref, onMounted, h } from "vue";
+import axios from "axios";
 import JobForm from "./JobForm.vue";
 
 const columnsReactive = [
@@ -37,13 +50,13 @@ const columnsReactive = [
     title: "名称",
     key: "name",
   },
+    {
+    title: "工作地点",
+    key: "location",
+  },
   {
     title: "详细信息",
     key: "content",
-  },
-  {
-    title: "工作地点",
-    key: "location",
   },
   {
     title: "操作",
@@ -58,6 +71,7 @@ const columnsReactive = [
             style: "margin-right: 10px",
             onClick: () => {
               console.log("edit " + row.id);
+              editJob(row);
             },
           },
           {
@@ -71,6 +85,7 @@ const columnsReactive = [
             ghost: true,
             onClick: () => {
               console.log("delete " + row.id);
+              deleteJob(row);
             },
           },
           {
@@ -89,20 +104,35 @@ const pagination = ref({
   pageSize: 20,
   itemCount: 0,
 });
+const selectedData = ref({});
 
+// UI
 const height = ref(document.documentElement.clientHeight - 180);
+const loading = ref(true);
+const showAddJob = ref(false);
+const showEditJob = ref(false);
+const loadingBar = useLoadingBar();
+
 
 onMounted(() => {
   window.onresize = () => {
     changeHeight();
   };
   changeHeight();
+
+  // axios for list
+  query(pagination.value.page, pagination.value.pageSize).then((data) => {
+    dataRef.value = data.jobs;
+    pagination.value.pageCount = data.pageCount;
+    pagination.value.itemCount = data.itemCount;
+    loading.value = false;
+    console.log(data);
+    console.log(pagination.value);
+  });
 });
 
 function changeHeight() {
   height.value = document.documentElement.clientHeight - 180;
-  console.log(document.documentElement.clientHeight);
-  console.log(height.value);
 }
 
 function query(page, pageSize = 20) {
@@ -126,6 +156,27 @@ function query(page, pageSize = 20) {
       }
     });
   });
+}
+
+function addJob() {
+  showAddJob.value = true;
+}
+
+function editJob(data) {
+  selectedData.value = data;
+  showEditJob.value = true;
+}
+
+function deleteJob(data) {
+
+}
+
+function dismissModal() {
+  // loading.value = true;
+  // loadingBar.start();
+
+  showAddJob.value = false;
+  showEditJob.value = false;
 }
 </script>
 <style></style>

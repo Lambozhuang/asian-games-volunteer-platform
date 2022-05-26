@@ -25,7 +25,7 @@
           <n-h3>{{ stateName }}</n-h3>
           <n-space justify="space-between" align="center">
             欢迎，{{ username }}
-            <n-button tertiary type="error" size="small" @click="logout()"
+            <n-button tertiary type="error" size="small" @click="logout"
               >注销</n-button
             >
           </n-space>

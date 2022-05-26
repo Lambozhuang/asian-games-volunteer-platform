@@ -31,7 +31,7 @@
             placeholder="密码"
             v-model:value="password"
           ></n-input>
-          <n-button class="login-button" type="primary" @click="login()">
+          <n-button class="login-button" type="primary" @click="login">
             登录
           </n-button>
         </n-space>

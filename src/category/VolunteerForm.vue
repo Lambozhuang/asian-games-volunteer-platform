@@ -72,10 +72,10 @@
     </n-grid>
   </n-form>
   <n-space justify="end">
-    <n-button @click="handleCancel()" :disabled="confirmLoading">取消</n-button>
+    <n-button @click="handleCancel" :disabled="confirmLoading">取消</n-button>
     <n-button
       type="primary"
-      @click="handleConfirm()"
+      @click="handleConfirm"
       :loading="confirmLoading"
       >{{ type }}</n-button
     >

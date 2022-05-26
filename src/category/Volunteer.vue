@@ -4,7 +4,7 @@
       <n-button
         tertiary
         type="warning"
-        @click="finishSearching()"
+        @click="finishSearching"
         v-if="pageStatus === 'search'"
       >
         取消搜索
@@ -12,7 +12,7 @@
       <n-button
         tertiary
         type="primary"
-        @click="refreshTable()"
+        @click="refreshTable"
         v-if="pageStatus === 'regular'"
       >
         刷新
@@ -25,11 +25,11 @@
         placeholder="输入身份证号"
         v-model:value="searchValue"
       />
-      <n-button tertiary type="primary" @click="searchVolunteer()"
+      <n-button tertiary type="primary" @click="searchVolunteer"
         >搜索</n-button
       >
       <n-divider vertical />
-      <n-button tertiary type="info" @click="addVolunteer()"
+      <n-button tertiary type="info" @click="addVolunteer"
         >添加志愿者</n-button
       >
     </n-space>
@@ -168,28 +168,24 @@ const columnsReactive = [
 ];
 const columns = ref(columnsReactive);
 const dataRef = ref([]);
-const loading = ref(true);
 const pagination = ref({
   page: 1,
   pageCount: 1,
   pageSize: 20,
   itemCount: 0,
 });
-
-const showAddVolunteer = ref(false);
-const showEditVolunteer = ref(false);
-
 const selectedData = ref({});
-
 const searchValue = ref(null);
 
 // UI
 const height = ref(document.documentElement.clientHeight - 180);
 const pageStatus = ref("regular");
-
+const loading = ref(true);
 const message = useMessage();
 const dialog = useDialog();
 const loadingBar = useLoadingBar();
+const showAddVolunteer = ref(false);
+const showEditVolunteer = ref(false);
 
 function changeHeight() {
   height.value = document.documentElement.clientHeight - 180;

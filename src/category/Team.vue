@@ -3,7 +3,7 @@
     <n-button
       tertiary
       type="primary"
-      @click="refreshTable()"
+      @click="refreshTable"
     >
       刷新
     </n-button>
