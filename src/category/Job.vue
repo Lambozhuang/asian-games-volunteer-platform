@@ -48,7 +48,7 @@ import {
 import { ref, onMounted, h } from "vue";
 import axios from "axios";
 import JobForm from "./JobForm.vue";
-import userinfo from "../Common.vue";
+import common from "../Common.vue";
 
 const columnsReactive = [
   {
@@ -151,7 +151,7 @@ function query(page, pageSize = 20) {
   return new Promise(function (resolve, reject) {
     axios({
       method: "get",
-      url: "/api/team/" + userinfo.team_id + "/jobs",
+      url: "/api/team/" + common.userinfo.team_id + "/jobs",
       params: {
         offset: offset,
         "page-size": pageSize,

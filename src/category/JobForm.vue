@@ -47,7 +47,7 @@ import {
   NSelect,
 } from "naive-ui";
 import { onMounted, ref } from "vue";
-import userinfo from "../Common.vue";
+import common from "../Common.vue";
 
 const props = defineProps(["type", "data"]);
 const emits = defineEmits(["dismiss"]);
@@ -95,7 +95,7 @@ function handleConfirm() {
       const payload = formValue.value;
       axios({
         method: "post",
-        url: "/api/team/" + userinfo.team_id + "/job",
+        url: "/api/team/" + common.userinfo.team_id + "/job",
         data: payload,
       })
         .then((response) => {
@@ -115,7 +115,7 @@ function handleConfirm() {
       const payload = formValue.value;
       axios({
         method: "patch",
-        url: "/api/team/" + userinfo.team_id + "/job/" + payload.id,
+        url: "/api/team/" + common.userinfo.team_id + "/job/" + payload.id,
         data: payload,
       })
         .then((response) => {

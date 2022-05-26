@@ -45,7 +45,7 @@ import { ref } from "vue";
 import { NButton, NInput, NSpace, NCard, NLayout } from "naive-ui";
 import { useRouter } from "vue-router";
 import axios from "axios";
-import userinfo from "./Common.vue";
+import common from "./Common.vue";
 
 let userName = ref("");
 let password = ref("");
@@ -67,8 +67,7 @@ function login() {
     .then(function (response) {
       if (response.data.code === 0) {
         console.log("登录成功");
-        userinfo.username = userName.value;
-        console.log(userinfo.username);
+        common.userinfo.username = userName.value;
         router.push({ name: "index" });
       }
     })

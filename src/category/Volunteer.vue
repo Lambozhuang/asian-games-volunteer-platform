@@ -80,7 +80,7 @@ import {
 } from "naive-ui";
 import { onMounted, ref, reactive, h } from "vue";
 import VolunteerForm from "./VolunteerForm.vue";
-import userinfo from "../Common.vue";
+import common from "../Common.vue";
 
 // data
 const columnsReactive = [
@@ -209,9 +209,10 @@ onMounted(() => {
 function query(page, pageSize = 20) {
   let offset = (page - 1) * pageSize;
   return new Promise(function (resolve, reject) {
+    console.log(common.userinfo);
     axios({
       method: "get",
-      url: "/api/team/" + userinfo.team_id + "/volunteers",
+      url: "/api/team/" + common.userinfo.team_id + "/volunteers",
       params: {
         offset: offset,
         "page-size": pageSize,
@@ -269,7 +270,7 @@ function searchVolunteer() {
   loadingBar.start();
   axios({
     method: "get",
-    url: "/api/team/" + userinfo.team_id + "/volunteer/" + searchValue.value,
+    url: "/api/team/" + common.userinfo.team_id + "/volunteer/" + searchValue.value,
   })
     .then((response) => {
       if (response.data.code === 0) {
