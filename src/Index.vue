@@ -97,22 +97,24 @@ const stateName = computed(() => {
 });
 
 onMounted(() => {
-  // axios({
-  //   method: "get",
-  //   url: "/api/admin/" + userinfo.username,
-  // })
-  //   .then((response) => {
-  //     if (response.data.code === 0) {
-  //       console.log("身份已验证");
-  //     } else {
-  //       console.log("未登录");
-  //       router.replace({ name: "login" });
-  //     }
-  //   })
-  //   .catch((error) => {
-  //     console.log(error);
-  //     router.replace({ name: "login" });
-  //   });
+  axios({
+    method: "get",
+    url: "/api/info",
+  })
+    .then((response) => {
+      if (response.data.code === 0) {
+        console.log("身份已验证");
+        userinfo.username = response.data.data.username;
+        userinfo.root = response.data.data.is_root;
+      } else {
+        console.log("未登录");
+        router.replace({ name: "login" });
+      }
+    })
+    .catch((error) => {
+      console.log(error);
+      router.replace({ name: "login" });
+    });
 });
 
 function handleMenuUpdate(key, item) {
