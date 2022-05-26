@@ -54,14 +54,8 @@ const emits = defineEmits(["dismiss"]);
 const formRef = ref(null);
 const formValue = ref({
   name: "",
-  gender: null,
-  id_number: "",
-  tel: null,
-  employment: "",
-  experience: "",
-  avatar: "",
-  job_id: null,
-  team_id: -1,
+  location: "",
+  content: "",
 });
 const rules = ref({
   name: {
@@ -78,11 +72,11 @@ const rules = ref({
 
 // UI
 const type = ref("");
+const confirmLoading = ref(false);
 
 onMounted(() => {
   if (props.type === "add") {
     type.value = "添加";
-
   } else if (props.type === "edit") {
     type.value = "确认";
     console.log(props.data);
@@ -91,13 +85,54 @@ onMounted(() => {
 });
 
 function handleConfirm() {
-  if (props.type === "add") {
-    
-    emits("dismiss");
-  } else if (props.type === "edit") {
-    
-    emits("dismiss");
-  }
+  console.log(formValue.value);
+  formRef.value?.validate(() => {
+    confirmLoading.value = true;
+    console.log("Infomation validated.");
+    if (props.type === "add") {
+      // add
+      const payload = formValue.value;
+      payload.team_id = -1; // TODO:
+      axios({
+        method: "post",
+        url: "/api/team/" + payload.team_id + "/job",
+        data: payload,
+      })
+        .then((response) => {
+          if (response.data.code === 0) {
+            console.log("添加成功");
+            emits("dismiss", "add");
+          } else {
+            confirmLoading.value = false;
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+          confirmLoading.value = false;
+        });
+    } else if (props.type === "edit") {
+      // edit
+      const payload = formValue.value;
+      payload.team_id = -1; // TODO:
+      axios({
+        method: "patch",
+        url: "/api/team/" + payload.team_id + "/job/" + payload.id,
+        data: payload,
+      })
+        .then((response) => {
+          if (response.data.code === 0) {
+            console.log("修改成功");
+            emits("dismiss", "edit");
+          } else {
+            confirmLoading.value = false;
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+          confirmLoading.value = false;
+        });
+    }
+  });
 }
 
 function handleCancel() {

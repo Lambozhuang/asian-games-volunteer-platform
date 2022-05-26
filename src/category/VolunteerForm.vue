@@ -213,13 +213,13 @@ function handleConfirm() {
   console.log(formValue.value);
   formRef.value?.validate((errors) => {
     if (!errors) {
+      confirmLoading.value = true;
       console.log("Infomation validated.");
       if (props.type === "add") {
         // add
         console.log("add confirm");
         console.log(formValue.value);
 
-        confirmLoading.value = true;
         const payload = formValue.value;
         payload.status = 0;
         payload.gender = payload.gender === "true" ? true : false;
@@ -242,8 +242,6 @@ function handleConfirm() {
         // edit
         console.log("edit confirm");
         console.log(formValue.value);
-
-        confirmLoading.value = true;
 
         const payload = formValue.value;
         payload.status = Number(payload.status);

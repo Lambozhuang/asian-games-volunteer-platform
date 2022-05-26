@@ -309,7 +309,7 @@ function editVolunteer(data) {
 }
 
 function deleteVolunteer(data) {
-  data.team_id = data.team_id == null ? -1 : data.team_id;
+  data.team_id = data.team_id == null ? -1 : data.team_id; // TODO:
   dialog.error({
     title: "警告",
     content: "删除后将无法恢复",

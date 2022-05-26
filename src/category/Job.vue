@@ -35,7 +35,7 @@
   </n-modal>
 </template>
 <script setup>
-import { NDataTable, NSpace, NInput, NButton, NModal, useLoadingBar } from "naive-ui";
+import { NDataTable, NSpace, NInput, NButton, NModal, useLoadingBar, useDialog, useMessage } from "naive-ui";
 import { ref, onMounted, h } from "vue";
 import axios from "axios";
 import JobForm from "./JobForm.vue";
@@ -112,7 +112,8 @@ const loading = ref(true);
 const showAddJob = ref(false);
 const showEditJob = ref(false);
 const loadingBar = useLoadingBar();
-
+const dialog = useDialog();
+const message = useMessage();
 
 onMounted(() => {
   window.onresize = () => {
@@ -158,6 +159,10 @@ function query(page, pageSize = 20) {
   });
 }
 
+function refreshTable() {
+
+}
+
 function addJob() {
   showAddJob.value = true;
 }
@@ -168,13 +173,54 @@ function editJob(data) {
 }
 
 function deleteJob(data) {
-
+  data.team_id = data.team_id == null ? -1 : data.team_id; // TODO:
+  dialog.error({
+    title: "警告",
+    content: "删除后将无法恢复",
+    positiveText: "确认删除",
+    negativeText: "取消",
+    onPositiveClick: () => {
+      loading.value = true;
+      loadingBar.start();
+      axios({
+        method: "delete",
+        url: "/api/team/" + data.team_id + "/job/" + data.id,
+      })
+        .then((response) => {
+          if (response.data.code === 0) {
+            loadingBar.finish();
+            message.success("删除成功");
+            console.log("删除成功");
+            setTimeout(() => {
+              location.reload();
+            }, 300);
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    onNegativeClick: () => {},
+  });
 }
 
-function dismissModal() {
-  // loading.value = true;
-  // loadingBar.start();
-
+function dismissModal(status) {
+  loading.value = true;
+  loadingBar.start();
+  query(pagination.value.page, pagination.value.pageSize).then((data) => {
+    dataRef.value = data.jobs;
+    pagination.value.pageCount = data.pageCount;
+    pagination.value.itemCount = data.itemCount;
+    loading.value = false;
+    loadingBar.finish();
+    console.log(data);
+    console.log(pagination.value);
+  });
+  if (status === "add") {
+    message.success("添加成功");
+  } else if (status === "edit") {
+    message.success("修改成功");
+  }
   showAddJob.value = false;
   showEditJob.value = false;
 }
