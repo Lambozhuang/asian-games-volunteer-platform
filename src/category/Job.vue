@@ -163,6 +163,7 @@ function query(page, pageSize = 20) {
         let data = response.data.data;
         data.itemCount = response.data.data.num;
         data.pageCount = Math.round((data.itemCount - 1) / pageSize);
+        data.jobs = data.jobs == null ? [] : data.jobs;
         resolve(data);
       }
     });

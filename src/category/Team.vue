@@ -119,7 +119,7 @@ onMounted(() => {
   };
   changeHeight();
 
-// axios for list
+  // axios for list
   query(pagination.value.page, pagination.value.pageSize).then((data) => {
     dataRef.value = data.teams;
     pagination.value.pageCount = data.pageCount;
@@ -141,7 +141,7 @@ function query(page, pageSize = 20) {
   return new Promise(function (resolve, reject) {
     axios({
       method: "get",
-      url: "/api/team/" + common.userinfo.team_id + "/team",
+      url: "/api/teams",
       params: {
         offset: offset,
         "page-size": pageSize,
@@ -153,6 +153,7 @@ function query(page, pageSize = 20) {
         let data = response.data.data;
         data.itemCount = response.data.data.num;
         data.pageCount = Math.round((data.itemCount - 1) / pageSize);
+        data.teams = data.teams == null ? [] : data.teams;
         resolve(data);
       }
     });
