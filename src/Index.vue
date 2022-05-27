@@ -108,6 +108,9 @@ onMounted(() => {
         common.userinfo.username = response.data.data.username;
         common.userinfo.root = response.data.data.is_root;
         common.userinfo.team_id = response.data.data.team_id === null ? -1 : response.data.data.team_id;
+
+        username.value = common.userinfo.username;
+
         router.replace("/index/volunteer");
       } else {
         console.log("未登录");
