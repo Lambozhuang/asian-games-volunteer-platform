@@ -1,4 +1,5 @@
 <template>
+<n-divider />
   <n-form
     ref="formRef"
     :model="formValue"
@@ -42,6 +43,7 @@ import {
   NGrid,
   NFormItemGridItem,
   NInput,
+  NDivider,
   NRadioGroup,
   NRadio,
   NSelect,

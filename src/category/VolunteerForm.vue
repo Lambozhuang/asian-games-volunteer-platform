@@ -1,4 +1,5 @@
 <template>
+<n-divider />
   <n-form
     ref="formRef"
     :model="formValue"
@@ -94,6 +95,7 @@ import {
   NRadioGroup,
   NRadio,
   NSelect,
+  NDivider
 } from "naive-ui";
 import { onMounted, ref } from "vue";
 
