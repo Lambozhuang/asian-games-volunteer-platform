@@ -165,6 +165,13 @@ function query(page, pageSize = 20) {
         data.pageCount = Math.round((data.itemCount - 1) / pageSize);
         data.jobs = data.jobs == null ? [] : data.jobs;
         resolve(data);
+      } else if (response.data.code === 404) {
+        console.log("岗位无数据");
+        let data = {
+          num: 0,
+          jobs: [],
+        };
+        resolve(data);
       }
     });
   });
