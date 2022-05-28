@@ -6,8 +6,8 @@
     </n-grid-item>
     <n-grid-item :span="3">
       <n-space align="center" justify="start">
-        <n-h3>{{ teamName }}</n-h3></n-space
-      >
+        <n-h3>{{ teamName }}</n-h3>
+      </n-space>
     </n-grid-item>
     <n-grid-item :span="2"></n-grid-item>
     <n-grid-item :span="2"></n-grid-item>
@@ -16,8 +16,8 @@
     </n-grid-item>
     <n-grid-item :span="3">
       <n-space align="center" justify="start">
-        <n-h3>{{ teamOrganization }}</n-h3></n-space
-      >
+        <n-h3>{{ teamOrganization }}</n-h3>
+      </n-space>
     </n-grid-item>
     <n-grid-item :span="2"></n-grid-item>
     <n-grid-item :span="2"></n-grid-item>
@@ -26,16 +26,18 @@
     </n-grid-item>
     <n-grid-item :span="3">
       <n-space align="center" justify="start">
-        <n-h3>{{ teamCode }}</n-h3></n-space
-      >
+        <n-h3>{{ teamCode }}</n-h3>
+      </n-space>
     </n-grid-item>
     <n-grid-item :span="2"></n-grid-item>
-    <n-grid-item :span="3"></n-grid-item>
-    <n-grid-item :span="4"><n-divider /></n-grid-item>
-    <n-grid-item :span="3"></n-grid-item>
+    <n-grid-item :span="4"></n-grid-item>
+    <n-grid-item :span="2"><n-divider /></n-grid-item>
+    <n-grid-item :span="4"></n-grid-item>
   </n-grid>
   <n-space justify="center">
-    <n-button :loading="loading" @click="editTeam">修改信息</n-button>
+    <n-button :loading="loading" @click="editTeam" size="large"
+      >修改信息</n-button
+    >
   </n-space>
 
   <n-modal
