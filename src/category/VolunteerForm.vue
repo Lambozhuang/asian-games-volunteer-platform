@@ -52,8 +52,8 @@
           v-model:value="formValue.team_id"
           placeholder="选择团队"
           :options="teamOptions"
-          :default-value="-1"
-          :disabled="true"
+          :disabled="teamOptionDisabled"
+          @update-value="handleTeamUpdate"
         />
       </n-form-item-grid-item>
       <n-form-item-grid-item :span="2" />
@@ -62,6 +62,8 @@
           v-model:value="formValue.job_id"
           placeholder="选择志愿者岗位"
           :options="jobOptions"
+          :loading="jobOptionLoading"
+          :disabled="jobOptionLoading"
         />
       </n-form-item-grid-item>
       <n-form-item-grid-item :span="2" />
@@ -94,6 +96,7 @@ import {
   NSelect,
   NDivider,
 } from "naive-ui";
+import loading from "naive-ui/es/_internal/loading";
 import { onMounted, ref } from "vue";
 import common from "../Common.vue";
 
@@ -171,11 +174,14 @@ const rules = ref({
 });
 
 const confirmLoading = ref(false);
+const teamOptionDisabled = ref(true);
+const jobOptionLoading = ref(true);
 
 onMounted(() => {
   if (props.type === "add") {
     type.value = "添加";
     formValue.value.team_id = common.userinfo.team_id;
+    getTeamJobs(formValue.value.team_id);
   } else if (props.type === "edit") {
     type.value = "确认";
     console.log(props.data);
@@ -184,12 +190,63 @@ onMounted(() => {
     tempData.gender = tempData.gender ? "true" : "false";
     tempData.team_id = tempData.team_id == null ? -1 : tempData.team_id;
     tempData.job_id = tempData.job == null ? null : tempData.job.id;
+    tempData.old_team_id = tempData.team_id;
     formValue.value = tempData;
   }
-
+  if (common.userinfo.is_root) {
+    teamOptionDisabled.value = false;
+  }
   axios({
     method: "get",
-    url: "/api/team/" + formValue.value.team_id + "/jobs",
+    url: "/api/teams",
+  })
+    .then((response) => {
+      if (response.data.code === 0) {
+        console.log("获取团队列表成功");
+        let tempData = response.data.data.teams;
+        console.log(teamOptions.value);
+        const options = tempData.map((v) => {
+          return { value: v.id, label: v.name };
+        });
+        options.push({
+          value: -1,
+          label: "默认",
+        });
+        teamOptions.value = options;
+        axios({
+          method: "get",
+          url: "/api/team/" + formValue.value.team_id + "/jobs",
+        })
+          .then((response) => {
+            if (response.data.code === 0) {
+              console.log("获取岗位列表成功");
+              let tempData = response.data.data.jobs;
+              tempData.team_id =
+                tempData.team_id == null ? -1 : tempData.team_id;
+              jobOptions.value = tempData.map((v) => {
+                return { value: v.id, label: v.name };
+              });
+              jobOptionLoading.value = false;
+            } else if (response.data.code === 404) {
+              jobOptionLoading.value = false;
+              jobOptions.value = [];
+            }
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      }
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+});
+
+function getTeamJobs(team_id) {
+  formValue.value.job_id = null;
+  axios({
+    method: "get",
+    url: "/api/team/" + team_id + "/jobs",
   })
     .then((response) => {
       if (response.data.code === 0) {
@@ -199,12 +256,22 @@ onMounted(() => {
         jobOptions.value = tempData.map((v) => {
           return { value: v.id, label: v.name };
         });
+        jobOptionLoading.value = false;
+      } else if (response.data.code === 404) {
+        jobOptionLoading.value = false;
+        jobOptions.value = [];
       }
     })
     .catch((error) => {
       console.log(error);
     });
-});
+}
+
+function handleTeamUpdate(value) {
+  console.log(value);
+  jobOptionLoading.value = true;
+  getTeamJobs(value);
+}
 
 function handleCancel() {
   emits("dismiss");
@@ -250,7 +317,7 @@ function handleConfirm() {
         payload.team_id = payload.team_id == null ? -1 : payload.team_id;
         axios({
           method: "patch",
-          url: "/api/team/" + payload.team_id + "/volunteer/" + payload.id,
+          url: "/api/team/" + payload.old_team_id + "/volunteer/" + payload.id,
           data: payload,
         })
           .then((response) => {
