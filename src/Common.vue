@@ -1,7 +1,7 @@
 <script type="text/javascript">
 const userinfo = {
     username: "",
-    root: false,
+    is_root: false,
     team_id: -1
 }
 export default {
