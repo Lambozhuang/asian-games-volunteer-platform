@@ -35,11 +35,18 @@
   </n-modal>
 </template>
 <script setup>
-import { NDataTable, NSpace, NInput, NButton, useLoadingBar } from "naive-ui";
+import {
+  NDataTable,
+  NSpace,
+  NButton,
+  NModal,
+  useLoadingBar,
+  useDialog,
+  useMessage,
+} from "naive-ui";
 import { ref, onMounted, h } from "vue";
 import axios from "axios";
 import teamForm from "./TeamForm.vue";
-import common from "../Common.vue";
 
 const columnsReactive = [
   {
@@ -112,6 +119,9 @@ const height = ref(document.documentElement.clientHeight - 180);
 const loading = ref(true);
 const showAddTeam = ref(false);
 const showEditTeam = ref(false);
+const loadingBar = useLoadingBar();
+const message = useMessage();
+const dialog = useDialog();
 
 onMounted(() => {
   window.onresize = () => {
@@ -160,18 +170,83 @@ function query(page, pageSize = 20) {
   });
 }
 
+function refreshTable() {
+  loading.value = true;
+  loadingBar.start();
+  pagination.value = {
+    page: 1,
+    pageCount: 1,
+    pageSize: 20,
+    itemCount: 0,
+  };
+  query(pagination.value.page, pagination.value.pageSize).then((data) => {
+    loadingBar.finish();
+    dataRef.value = data.teams;
+    pagination.value.pageCount = data.pageCount;
+    pagination.value.itemCount = data.itemCount;
+    loading.value = false;
+    console.log(data);
+    console.log(pagination.value);
+  });
+}
+
 function addTeam() {
   showAddTeam.value = true;
 }
 
-function editTeam() {
+function editTeam(data) {
   selectedData.value = data;
   showEditTeam.value = true;
 }
 
-function deleteTeam(data) {}
+function deleteTeam(data) {
+  dialog.error({
+    title: "警告",
+    content: "删除后将无法恢复",
+    positiveText: "确认删除",
+    negativeText: "取消",
+    onPositiveClick: () => {
+      loading.value = true;
+      loadingBar.start();
+      axios({
+        method: "delete",
+        url: "/api/team/" + data.id + "/",
+      })
+        .then((response) => {
+          if (response.data.code === 0) {
+            loadingBar.finish();
+            message.success("删除成功");
+            console.log("删除成功");
+            setTimeout(() => {
+              location.reload();
+            }, 300);
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    onNegativeClick: () => {},
+  });
+}
 
 function dismissModal(status) {
+  loading.value = true;
+  loadingBar.start();
+  query(pagination.value.page, pagination.value.pageSize).then((data) => {
+    dataRef.value = data.teams;
+    pagination.value.pageCount = data.pageCount;
+    pagination.value.itemCount = data.itemCount;
+    loading.value = false;
+    loadingBar.finish();
+    console.log(data);
+    console.log(pagination.value);
+  });
+  if (status === "add") {
+    message.success("添加成功");
+  } else if (status === "edit") {
+    message.success("修改成功");
+  }
   showAddTeam.value = false;
   showEditTeam.value = false;
 }

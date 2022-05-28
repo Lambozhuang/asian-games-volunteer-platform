@@ -170,7 +170,25 @@ function query(page, pageSize = 20) {
   });
 }
 
-function refreshTable() {}
+function refreshTable() {
+  loading.value = true;
+  loadingBar.start();
+  pagination.value = {
+    page: 1,
+    pageCount: 1,
+    pageSize: 20,
+    itemCount: 0,
+  };
+  query(pagination.value.page, pagination.value.pageSize).then((data) => {
+    loadingBar.finish();
+    dataRef.value = data.jobs;
+    pagination.value.pageCount = data.pageCount;
+    pagination.value.itemCount = data.itemCount;
+    loading.value = false;
+    console.log(data);
+    console.log(pagination.value);
+  });
+}
 
 function addJob() {
   showAddJob.value = true;
