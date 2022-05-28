@@ -78,21 +78,23 @@ const loadingBar = useLoadingBar();
 const message = useMessage();
 
 onMounted(() => {
-  axios({
-    method: "get",
-    url: "/api/team/" + common.userinfo.team_id + "/",
-  })
-    .then((response) => {
-      if (response.data.code === 0) {
-        teamName.value = response.data.data.name;
-        teamOrganization.value = response.data.data.organization;
-        teamCode.value = response.data.data.code;
-        console.log("成功获取团队信息");
-      }
+  common.getInfo().then(() => {
+    axios({
+      method: "get",
+      url: "/api/team/" + common.userinfo.team_id + "/",
     })
-    .catch((error) => {
-      console.log(error);
-    });
+      .then((response) => {
+        if (response.data.code === 0) {
+          teamName.value = response.data.data.name;
+          teamOrganization.value = response.data.data.organization;
+          teamCode.value = response.data.data.code;
+          console.log("成功获取团队信息");
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  });
 });
 
 function editTeam() {

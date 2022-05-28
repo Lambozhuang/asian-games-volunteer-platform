@@ -15,7 +15,6 @@
       </n-space>
       <n-menu
         :options="menuOptions"
-        :default-value="state"
         :value="state"
         @update:value="handleMenuUpdate"
       />
@@ -37,7 +36,7 @@
         embedded
         :native-scrollbar="false"
       >
-        <RouterView />
+        <router-view />
       </n-layout-content>
     </n-layout>
   </n-layout>
@@ -57,7 +56,9 @@ import {
   NH1,
   NH2,
   NH3,
+  useLoadingBar,
 } from "naive-ui";
+import loading from "naive-ui/es/_internal/loading";
 import { onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import common from "./Common.vue";
@@ -67,7 +68,7 @@ const username = ref(common.userinfo.username);
 
 const router = useRouter();
 const route = useRoute();
-
+const loadingBar = useLoadingBar();
 const state = computed(
   () => route.path.split("/")[route.path.split("/").length - 1]
 );
@@ -114,35 +115,18 @@ const createMenuOptions2 = [
   },
 ];
 onMounted(() => {
-  axios({
-    method: "get",
-    url: "/api/info",
-  })
-    .then((response) => {
-      if (response.data.code === 0) {
-        console.log("身份已验证");
-        common.userinfo.username = response.data.data.username;
-        common.userinfo.is_root = response.data.data.is_root;
-        common.userinfo.team_id =
-          response.data.data.team_id === null ? -1 : response.data.data.team_id;
-        if (response.data.data.is_root) {
-          menuOptions.value = createMenuOptions1;
-        } else {
-          menuOptions.value = createMenuOptions2;
-        }
-        console.log(menuOptions.value);
-        username.value = common.userinfo.username;
-
-        router.replace("/index/volunteer");
-      } else {
-        console.log("未登录");
-        router.replace({ name: "login" });
-      }
-    })
-    .catch((error) => {
-      console.log(error);
-      router.replace({ name: "login" });
-    });
+  loadingBar.start();
+  common.getInfo().then(() => {
+    if (common.userinfo.is_root) {
+      menuOptions.value = createMenuOptions1;
+    } else {
+      menuOptions.value = createMenuOptions2;
+    }
+    console.log(menuOptions.value);
+    username.value = common.userinfo.username;
+    loadingBar.finish();
+    router.replace({name: "volunteer"})
+  });
 });
 
 function handleMenuUpdate(key, item) {

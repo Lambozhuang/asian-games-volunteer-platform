@@ -47,6 +47,7 @@ import {
 import { ref, onMounted, h } from "vue";
 import axios from "axios";
 import teamForm from "./TeamForm.vue";
+import common from "../Common.vue";
 
 const columnsReactive = [
   {
@@ -129,14 +130,16 @@ onMounted(() => {
   };
   changeHeight();
 
-  // axios for list
-  query(pagination.value.page, pagination.value.pageSize).then((data) => {
-    dataRef.value = data.teams;
-    pagination.value.pageCount = data.pageCount;
-    pagination.value.itemCount = data.itemCount;
-    loading.value = false;
-    console.log(data);
-    console.log(pagination.value);
+  common.getInfo().then(() => {
+    // axios for list
+    query(pagination.value.page, pagination.value.pageSize).then((data) => {
+      dataRef.value = data.teams;
+      pagination.value.pageCount = data.pageCount;
+      pagination.value.itemCount = data.itemCount;
+      loading.value = false;
+      console.log(data);
+      console.log(pagination.value);
+    });
   });
 });
 

@@ -1,5 +1,5 @@
 <template>
-<n-divider />
+  <n-divider />
   <n-form
     ref="formRef"
     :model="formValue"
@@ -74,12 +74,9 @@
   </n-form>
   <n-space justify="end">
     <n-button @click="handleCancel" :disabled="confirmLoading">取消</n-button>
-    <n-button
-      type="primary"
-      @click="handleConfirm"
-      :loading="confirmLoading"
-      >{{ type }}</n-button
-    >
+    <n-button type="primary" @click="handleConfirm" :loading="confirmLoading">{{
+      type
+    }}</n-button>
   </n-space>
 </template>
 
@@ -95,9 +92,10 @@ import {
   NRadioGroup,
   NRadio,
   NSelect,
-  NDivider
+  NDivider,
 } from "naive-ui";
 import { onMounted, ref } from "vue";
+import common from "../Common.vue";
 
 const props = defineProps(["type", "data"]);
 const emits = defineEmits(["dismiss"]);
@@ -177,6 +175,7 @@ const confirmLoading = ref(false);
 onMounted(() => {
   if (props.type === "add") {
     type.value = "添加";
+    formValue.value.team_id = common.userinfo.team_id;
   } else if (props.type === "edit") {
     type.value = "确认";
     console.log(props.data);

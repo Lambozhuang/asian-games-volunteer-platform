@@ -1,11 +1,11 @@
-import { createRouter, createWebHistory } from "vue-router"
+import { createRouter, createWebHistory } from "vue-router";
 
 const routes = [
   { path: "/", redirect: "/index" },
   {
     path: "/login",
     name: "login",
-    component: () => import("/src/Login.vue")
+    component: () => import("/src/Login.vue"),
   },
   {
     path: "/index",
@@ -13,26 +13,30 @@ const routes = [
     component: () => import("/src/Index.vue"),
     children: [
       {
-        path: 'volunteer',
-        component: () => import("/src/category/Volunteer.vue")
+        name: "volunteer",
+        path: "volunteer",
+        component: () => import("/src/category/Volunteer.vue"),
       },
       {
-        path: 'job',
-        component: () => import("/src/category/Job.vue")
+        name: "job",
+        path: "job",
+        component: () => import("/src/category/Job.vue"),
       },
       {
-        path: 'team',
-        component: () => import("/src/category/Team.vue")
+        name: "team",
+        path: "team",
+        component: () => import("/src/category/Team.vue"),
       },
       {
-        path: 'myTeam',
-        component: () => import("/src/category/MyTeam.vue")
-      }
-    ]
-  }
-]
+        name: "myTeam",
+        path: "myTeam",
+        component: () => import("/src/category/MyTeam.vue"),
+      },
+    ],
+  },
+];
 
 export const router = createRouter({
   history: createWebHistory(),
-  routes: routes
-})
+  routes: routes,
+});

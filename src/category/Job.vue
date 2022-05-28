@@ -131,14 +131,16 @@ onMounted(() => {
   };
   changeHeight();
 
-  // axios for list
-  query(pagination.value.page, pagination.value.pageSize).then((data) => {
-    dataRef.value = data.jobs;
-    pagination.value.pageCount = data.pageCount;
-    pagination.value.itemCount = data.itemCount;
-    loading.value = false;
-    console.log(data);
-    console.log(pagination.value);
+  common.getInfo().then(() => {
+    // axios for list
+    query(pagination.value.page, pagination.value.pageSize).then((data) => {
+      dataRef.value = data.jobs;
+      pagination.value.pageCount = data.pageCount;
+      pagination.value.itemCount = data.itemCount;
+      loading.value = false;
+      console.log(data);
+      console.log(pagination.value);
+    });
   });
 });
 

@@ -195,14 +195,16 @@ onMounted(() => {
   };
   changeHeight();
 
-  // axios for list
-  query(pagination.value.page, pagination.value.pageSize).then((data) => {
-    dataRef.value = data.volunteers;
-    pagination.value.pageCount = data.pageCount;
-    pagination.value.itemCount = data.itemCount;
-    loading.value = false;
-    console.log(data);
-    console.log(pagination.value);
+  common.getInfo().then(() => {
+    // axios for list
+    query(pagination.value.page, pagination.value.pageSize).then((data) => {
+      dataRef.value = data.volunteers;
+      pagination.value.pageCount = data.pageCount;
+      pagination.value.itemCount = data.itemCount;
+      loading.value = false;
+      console.log(data);
+      console.log(pagination.value);
+    });
   });
 });
 
@@ -271,7 +273,11 @@ function searchVolunteer() {
   loadingBar.start();
   axios({
     method: "get",
-    url: "/api/team/" + common.userinfo.team_id + "/volunteer/" + searchValue.value,
+    url:
+      "/api/team/" +
+      common.userinfo.team_id +
+      "/volunteer/" +
+      searchValue.value,
   })
     .then((response) => {
       if (response.data.code === 0) {
