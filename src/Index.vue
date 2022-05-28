@@ -62,21 +62,7 @@ import { onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import common from "./Common.vue";
 
-const menuOptions = ref([
-  {
-    label: "志愿者管理",
-    key: "volunteer",
-  },
-  {
-    label: "岗位管理",
-    key: "job",
-  },
-  {
-    label: "团队管理",
-    key: "team",
-  },
-]);
-
+const menuOptions = ref([]);
 const username = ref(common.userinfo.username);
 
 const router = useRouter();
@@ -94,9 +80,39 @@ const stateName = computed(() => {
       return "岗位管理";
     case "team":
       return "团队管理";
+    case "myTeam":
+      return "我的团队";
   }
 });
 
+const createMenuOptions1 = [
+  {
+    label: "志愿者管理",
+    key: "volunteer",
+  },
+  {
+    label: "岗位管理",
+    key: "job",
+  },
+  {
+    label: "团队管理",
+    key: "team",
+  },
+];
+const createMenuOptions2 = [
+  {
+    label: "志愿者管理",
+    key: "volunteer",
+  },
+  {
+    label: "岗位管理",
+    key: "job",
+  },
+  {
+    label: "我的团队",
+    key: "myTeam",
+  },
+];
 onMounted(() => {
   axios({
     method: "get",
@@ -106,9 +122,15 @@ onMounted(() => {
       if (response.data.code === 0) {
         console.log("身份已验证");
         common.userinfo.username = response.data.data.username;
-        common.userinfo.root = response.data.data.is_root;
-        common.userinfo.team_id = response.data.data.team_id === null ? -1 : response.data.data.team_id;
-
+        common.userinfo.is_root = response.data.data.is_root;
+        common.userinfo.team_id =
+          response.data.data.team_id === null ? -1 : response.data.data.team_id;
+        if (response.data.data.is_root) {
+          menuOptions.value = createMenuOptions1;
+        } else {
+          menuOptions.value = createMenuOptions2;
+        }
+        console.log(menuOptions.value);
         username.value = common.userinfo.username;
 
         router.replace("/index/volunteer");
@@ -134,11 +156,37 @@ function handleMenuUpdate(key, item) {
     case "team":
       router.replace("/index/team");
       break;
+    case "myTeam":
+      router.replace("/index/myTeam");
+      break;
   }
 }
 
 function logout() {
+  delCookie();
   router.replace("/login");
+}
+
+function delCookie() {
+  var cookies = document.cookie.split(";");
+  for (var i = 0; i < cookies.length; i++) {
+    var cookie = cookies[i];
+    var eqPos = cookie.indexOf("=");
+    var name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+    document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
+  }
+  if (cookies.length > 0) {
+    for (var i = 0; i < cookies.length; i++) {
+      var cookie = cookies[i];
+      var eqPos = cookie.indexOf("=");
+      var name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+      var domain = location.host.substr(location.host.indexOf("."));
+      document.cookie =
+        name +
+        "=;expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=" +
+        domain;
+    }
+  }
 }
 </script>
 <style>

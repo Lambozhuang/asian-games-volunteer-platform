@@ -23,6 +23,10 @@ const routes = [
       {
         path: 'team',
         component: () => import("/src/category/Team.vue")
+      },
+      {
+        path: 'myTeam',
+        component: () => import("/src/category/MyTeam.vue")
       }
     ]
   }
