@@ -214,7 +214,7 @@ function query(page, pageSize = 20) {
     console.log(common.userinfo);
     axios({
       method: "get",
-      url: "/api/team/" + common.userinfo.team_id + "/volunteers",
+      url: "/api/v1/team/" + common.userinfo.team_id + "/volunteers",
       params: {
         offset: offset,
         "page-size": pageSize,
@@ -274,7 +274,7 @@ function searchVolunteer() {
   axios({
     method: "get",
     url:
-      "/api/team/" +
+      "/api/v1/team/" +
       common.userinfo.team_id +
       "/volunteer/" +
       searchValue.value,
@@ -325,7 +325,7 @@ function deleteVolunteer(data) {
       loadingBar.start();
       axios({
         method: "delete",
-        url: "/api/team/" + data.team_id + "/volunteer/" + data.id,
+        url: "/api/v1/team/" + data.team_id + "/volunteer/" + data.id,
       })
         .then((response) => {
           if (response.data.code === 0) {

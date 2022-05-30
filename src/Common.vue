@@ -9,7 +9,7 @@ function getInfo() {
   return new Promise((resolve, reject) => {
     axios({
       method: "get",
-      url: "/api/info",
+      url: "/api/v1/info",
     })
       .then((response) => {
         if (response.data.code === 0) {

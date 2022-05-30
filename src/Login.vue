@@ -58,7 +58,7 @@ function login() {
 
   axios({
     method: "post",
-    url: "/api/login",
+    url: "/api/v1/login",
     data: {
       username: userName.value,
       password: password.value,

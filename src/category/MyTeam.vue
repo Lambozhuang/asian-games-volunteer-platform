@@ -83,7 +83,7 @@ onMounted(() => {
   common.getInfo().then(() => {
     axios({
       method: "get",
-      url: "/api/team/" + common.userinfo.team_id + "/",
+      url: "/api/v1/team/" + common.userinfo.team_id + "/",
     })
       .then((response) => {
         if (response.data.code === 0) {
@@ -118,7 +118,7 @@ function dismissModal(status) {
   }
   axios({
     method: "get",
-    url: "/api/team/" + common.userinfo.team_id + "/",
+    url: "/api/v1/team/" + common.userinfo.team_id + "/",
   })
     .then((response) => {
       if (response.data.code === 0) {

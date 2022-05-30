@@ -153,7 +153,7 @@ function query(page, pageSize = 20) {
   return new Promise(function (resolve, reject) {
     axios({
       method: "get",
-      url: "/api/team/" + common.userinfo.team_id + "/jobs",
+      url: "/api/v1/team/" + common.userinfo.team_id + "/jobs",
       params: {
         offset: offset,
         "page-size": pageSize,
@@ -220,7 +220,7 @@ function deleteJob(data) {
       loadingBar.start();
       axios({
         method: "delete",
-        url: "/api/team/" + data.team_id + "/job/" + data.id,
+        url: "/api/v1/team/" + data.team_id + "/job/" + data.id,
       })
         .then((response) => {
           if (response.data.code === 0) {

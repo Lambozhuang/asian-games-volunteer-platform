@@ -96,7 +96,7 @@ function handleConfirm() {
       const payload = formValue.value;
       axios({
         method: "post",
-        url: "/api/team",
+        url: "/api/v1/team",
         data: payload,
       })
         .then((response) => {
@@ -116,7 +116,7 @@ function handleConfirm() {
       const payload = formValue.value;
       axios({
         method: "patch",
-        url: "/api/team/" + props.data.id + "/",
+        url: "/api/v1/team/" + props.data.id + "/",
         data: payload,
       })
         .then((response) => {

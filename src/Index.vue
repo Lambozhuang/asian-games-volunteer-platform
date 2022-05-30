@@ -58,7 +58,6 @@ import {
   NH3,
   useLoadingBar,
 } from "naive-ui";
-import loading from "naive-ui/es/_internal/loading";
 import { onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import common from "./Common.vue";
@@ -116,17 +115,23 @@ const createMenuOptions2 = [
 ];
 onMounted(() => {
   loadingBar.start();
-  common.getInfo().then(() => {
-    if (common.userinfo.is_root) {
-      menuOptions.value = createMenuOptions1;
-    } else {
-      menuOptions.value = createMenuOptions2;
-    }
-    console.log(menuOptions.value);
-    username.value = common.userinfo.username;
-    loadingBar.finish();
-    router.replace({name: "volunteer"})
-  });
+  common
+    .getInfo()
+    .then(() => {
+      if (common.userinfo.is_root) {
+        menuOptions.value = createMenuOptions1;
+      } else {
+        menuOptions.value = createMenuOptions2;
+      }
+      console.log(menuOptions.value);
+      username.value = common.userinfo.username;
+      loadingBar.finish();
+      router.replace({ name: "volunteer" });
+    })
+    .catch(() => {
+      loadingBar.finish();
+      router.replace({ name: "login" });
+    });
 });
 
 function handleMenuUpdate(key, item) {

@@ -198,7 +198,7 @@ onMounted(() => {
   }
   axios({
     method: "get",
-    url: "/api/teams",
+    url: "/api/v1/teams",
   })
     .then((response) => {
       if (response.data.code === 0) {
@@ -215,7 +215,7 @@ onMounted(() => {
         teamOptions.value = options;
         axios({
           method: "get",
-          url: "/api/team/" + formValue.value.team_id + "/jobs",
+          url: "/api/v1/team/" + formValue.value.team_id + "/jobs",
         })
           .then((response) => {
             if (response.data.code === 0) {
@@ -246,7 +246,7 @@ function getTeamJobs(team_id) {
   formValue.value.job_id = null;
   axios({
     method: "get",
-    url: "/api/team/" + team_id + "/jobs",
+    url: "/api/v1/team/" + team_id + "/jobs",
   })
     .then((response) => {
       if (response.data.code === 0) {
@@ -293,7 +293,7 @@ function handleConfirm() {
         payload.gender = payload.gender === "true" ? true : false;
         axios({
           method: "post",
-          url: "/api/team/" + payload.team_id + "/volunteer/",
+          url: "/api/v1/team/" + payload.team_id + "/volunteer/",
           data: payload,
         })
           .then((response) => {
@@ -317,7 +317,7 @@ function handleConfirm() {
         payload.team_id = payload.team_id == null ? -1 : payload.team_id;
         axios({
           method: "patch",
-          url: "/api/team/" + payload.old_team_id + "/volunteer/" + payload.id,
+          url: "/api/v1/team/" + payload.old_team_id + "/volunteer/" + payload.id,
           data: payload,
         })
           .then((response) => {

@@ -154,7 +154,7 @@ function query(page, pageSize = 20) {
   return new Promise(function (resolve, reject) {
     axios({
       method: "get",
-      url: "/api/teams",
+      url: "/api/v1/teams",
       params: {
         offset: offset,
         "page-size": pageSize,
@@ -213,7 +213,7 @@ function deleteTeam(data) {
       loadingBar.start();
       axios({
         method: "delete",
-        url: "/api/team/" + data.id + "/",
+        url: "/api/v1/team/" + data.id + "/",
       })
         .then((response) => {
           if (response.data.code === 0) {
