@@ -200,20 +200,24 @@ onMounted(() => {
     method: "get",
     url: "/api/v1/teams",
   })
-    .then((response) => {
+    .then(async (response) => {
       if (response.data.code === 0) {
         console.log("获取团队列表成功");
         let tempData = response.data.data.teams;
-        console.log(teamOptions.value);
-        const options = tempData.map((v) => {
-          return { value: v.id, label: v.name };
-        });
+        let options = [];
+        if (tempData !== null) {
+          console.log(teamOptions.value);
+          options = tempData.map((v) => {
+            return { value: v.id, label: v.name };
+          });
+        }
         options.push({
           value: -1,
           label: "默认",
         });
         teamOptions.value = options;
-        axios({
+
+        await axios({
           method: "get",
           url: "/api/v1/team/" + formValue.value.team_id + "/jobs",
         })
@@ -317,7 +321,8 @@ function handleConfirm() {
         payload.team_id = payload.team_id == null ? -1 : payload.team_id;
         axios({
           method: "patch",
-          url: "/api/v1/team/" + payload.old_team_id + "/volunteer/" + payload.id,
+          url:
+            "/api/v1/team/" + payload.old_team_id + "/volunteer/" + payload.id,
           data: payload,
         })
           .then((response) => {
