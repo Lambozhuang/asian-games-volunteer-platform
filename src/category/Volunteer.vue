@@ -99,6 +99,7 @@ const columnsReactive = [
     ellipsis: {
       tooltip: true,
     },
+    width: 190,
   },
   {
     title: "性别",
@@ -120,10 +121,12 @@ const columnsReactive = [
   {
     title: "岗位",
     key: "job.name",
+    width: 180,
   },
   {
     title: "状态",
     key: "status",
+    width: 60,
   },
   {
     title: "操作",
@@ -172,10 +175,10 @@ const pagination = ref({
   itemCount: 0,
 });
 const selectedData = ref({});
-const searchValue = ref(null);
+const searchValue = ref("");
 
 // UI
-const height = ref(document.documentElement.clientHeight - 180);
+const height = ref(document.documentElement.clientHeight - 153);
 const pageStatus = ref("regular");
 const loading = ref(true);
 const message = useMessage();
@@ -185,7 +188,7 @@ const showAddVolunteer = ref(false);
 const showEditVolunteer = ref(false);
 
 function changeHeight() {
-  height.value = document.documentElement.clientHeight - 180;
+  height.value = document.documentElement.clientHeight - 153;
 }
 
 onMounted(() => {
@@ -348,6 +351,8 @@ function deleteVolunteer(data) {
 function dismissModal(status) {
   loading.value = true;
   loadingBar.start();
+  pageStatus.value = "regular";
+  searchValue.value = "";
   query(pagination.value.page, pagination.value.pageSize).then((data) => {
     dataRef.value = data.volunteers;
     pagination.value.pageCount = data.pageCount;

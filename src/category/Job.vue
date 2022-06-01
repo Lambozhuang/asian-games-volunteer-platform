@@ -117,7 +117,7 @@ const pagination = ref({
 const selectedData = ref({});
 
 // UI
-const height = ref(document.documentElement.clientHeight - 180);
+const height = ref(document.documentElement.clientHeight - 153);
 const loading = ref(true);
 const showAddJob = ref(false);
 const showEditJob = ref(false);
@@ -145,7 +145,7 @@ onMounted(() => {
 });
 
 function changeHeight() {
-  height.value = document.documentElement.clientHeight - 180;
+  height.value = document.documentElement.clientHeight - 153;
 }
 
 function query(page, pageSize = 20) {
@@ -159,7 +159,7 @@ function query(page, pageSize = 20) {
         "page-size": pageSize,
       },
     }).then(function (response) {
-      if (response.data.code === 0) {
+      if (response.data.code === 0 && response.data.data !== null) {
         console.log("成功获取岗位列表");
         console.log(response.data.data);
         let data = response.data.data;
@@ -167,7 +167,7 @@ function query(page, pageSize = 20) {
         data.pageCount = Math.round((data.itemCount - 1) / pageSize);
         data.jobs = data.jobs == null ? [] : data.jobs;
         resolve(data);
-      } else if (response.data.code === 404) {
+      } else if (response.data.code === 0 && response.data.data == null) {
         console.log("岗位无数据");
         let data = {
           num: 0,

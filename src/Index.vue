@@ -25,9 +25,9 @@
           <n-h3>{{ stateName }}</n-h3>
           <n-space justify="space-between" align="center">
             欢迎，{{ username }}
-            <n-button tertiary type="error" size="small" @click="logout"
-              >注销</n-button
-            >
+            <n-button tertiary type="error" size="small" @click="logout">
+            注销
+            </n-button>
           </n-space>
         </n-space>
       </n-layout-header>
@@ -44,7 +44,6 @@
 
 <script setup>
 import { computed } from "@vue/reactivity";
-import axios from "axios";
 import {
   NLayout,
   NLayoutSider,

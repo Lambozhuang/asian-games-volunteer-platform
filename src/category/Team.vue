@@ -66,7 +66,7 @@ const columnsReactive = [
   {
     title: "邀请码",
     key: "code",
-    width: 100,
+    width: 150,
   },
   {
     title: "操作",
@@ -116,7 +116,7 @@ const pagination = ref({
 const selectedData = ref({});
 
 // UI
-const height = ref(document.documentElement.clientHeight - 180);
+const height = ref(document.documentElement.clientHeight - 153);
 const loading = ref(true);
 const showAddTeam = ref(false);
 const showEditTeam = ref(false);
@@ -144,7 +144,7 @@ onMounted(() => {
 });
 
 function changeHeight() {
-  height.value = document.documentElement.clientHeight - 180;
+  height.value = document.documentElement.clientHeight - 153;
   console.log(document.documentElement.clientHeight);
   console.log(height.value);
 }

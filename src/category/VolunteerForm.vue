@@ -217,9 +217,32 @@ onMounted(() => {
         });
         teamOptions.value = options;
 
-        await axios({
+        axios({
           method: "get",
           url: "/api/v1/team/" + formValue.value.team_id + "/jobs",
+        })
+          .then((response) => {
+            if (response.data.code === 0) {
+              console.log("获取岗位列表成功");
+              let tempData = response.data.data.jobs;
+              tempData.team_id =
+                tempData.team_id == null ? -1 : tempData.team_id;
+              jobOptions.value = tempData.map((v) => {
+                return { value: v.id, label: v.name };
+              });
+              jobOptionLoading.value = false;
+            } else if (response.data.code === 404) {
+              jobOptionLoading.value = false;
+              jobOptions.value = [];
+            }
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      } else {
+        axios({
+          method: "get",
+          url: "/api/v1/team/" + common.userinfo.team_id + "/jobs",
         })
           .then((response) => {
             if (response.data.code === 0) {
